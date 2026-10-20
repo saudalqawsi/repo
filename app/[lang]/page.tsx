@@ -136,8 +136,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <section className="sec aim" aria-labelledby="aim-h">
         <div className="wrap">
           <h2 id="aim-h" className="aim-h">
-            <span>{u.aimA}</span>
-            <span className="aim-badge" aria-hidden="true"><LoaderMark size={40} color="var(--sun)" /></span>
+            <span>{u.aimA}</span>{' '}
+            <span className="aim-badge" aria-hidden="true"><LoaderMark size={40} color="var(--sun)" /></span>{' '}
             <span>{u.aimB}</span>
           </h2>
           <p className="aim-lead">{u.aimLead}</p>
