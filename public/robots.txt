@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /ar/account
+Disallow: /en/account
+Disallow: /ar/login
+Disallow: /en/login
+Disallow: /api/
