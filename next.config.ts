@@ -15,6 +15,12 @@ const config: NextConfig = {
   poweredByHeader: false,
   reactStrictMode: true,
   images: { formats: ['image/avif', 'image/webp'] },
+  // Photos ship in /public/img. If a deployment was made without them (an inline
+  // upload with source only), fall back to the same files in the repo via jsDelivr.
+  async rewrites() {
+    const origin = process.env.IMG_FALLBACK_ORIGIN
+    return origin ? { beforeFiles: [], afterFiles: [], fallback: [{ source: '/img/:path*', destination: `${origin}/:path*` }] } : []
+  },
   async headers() {
     return [{ source: '/:path*', headers: securityHeaders }]
   },
