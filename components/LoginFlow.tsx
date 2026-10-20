@@ -82,7 +82,7 @@ export function LoginFlow({ locale, d, next }: { locale: Locale; d: Dict['auth']
           style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
         >
           <div>
-            <h1>{d.title}</h1>
+            <h2 className="flow-h">{d.title}</h2>
             <p className="muted">{d.phoneLead}</p>
           </div>
           <label className="field">
@@ -118,7 +118,7 @@ export function LoginFlow({ locale, d, next }: { locale: Locale; d: Dict['auth']
           style={{ display: 'flex', flexDirection: 'column', gap: 18 }}
         >
           <div>
-            <h1>{d.codeTitle}</h1>
+            <h2 className="flow-h">{d.codeTitle}</h2>
             <p className="muted">{fill(d.codeLead, { phone: pretty })}</p>
           </div>
           <label className="field">

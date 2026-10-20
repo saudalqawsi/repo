@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { PageBanner } from '@/components/PageBanner'
+import { NextSteps } from '@/components/NextSteps'
 import { notFound, redirect } from 'next/navigation'
 import { isLocale, t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/server'
@@ -61,18 +62,29 @@ export default async function AccountPage({ params }: { params: Promise<{ lang: 
             <li className="req" key={r.id}>
               <div>
                 <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
-                  <b>{r.request_items.map((i) => `${lang === 'ar' ? i.equipment?.name_ar : i.equipment?.name_en} × ${i.qty}`).join('، ')}</b>
+                  <b>{r.request_items.map((i) => `${lang === 'ar' ? i.equipment?.name_ar : i.equipment?.name_en} × ${new Intl.NumberFormat(lang === 'ar' ? 'ar-SA' : 'en-US').format(i.qty)}`).join(lang === 'ar' ? '، ' : ', ')}</b>
                   <span className="status" data-s={r.status}>{d.acc.status[r.status]}</span>
                 </div>
                 <p className="small muted" style={{ marginTop: 4 }}>
                   {r.ref} · {r.site_label} · {d.acc.starts} {fmt.format(new Date(r.start_date))}
                 </p>
               </div>
-              {['submitted', 'reviewing', 'matched'].includes(r.status) ? <CancelButton id={r.id} label={d.acc.cancel} /> : <span />}
+              <div className="req-actions">
+                {['matched', 'contracted'].includes(r.status) ? (
+                  <>
+                    <button className="btn btn-ghost btn-sm" type="button" disabled title={d.after.soon}>{d.after.contract} · {d.after.soon}</button>
+                    <button className="btn btn-ghost btn-sm" type="button" disabled title={d.after.soon}>{d.after.payment} · {d.after.soon}</button>
+                  </>
+                ) : null}
+                {['submitted', 'reviewing', 'matched'].includes(r.status) ? <CancelButton id={r.id} label={d.acc.cancel} /> : null}
+              </div>
             </li>
           ))}
         </ul>
       )}
+      <div style={{ marginTop: 28 }}>
+        <NextSteps d={d.after} />
+      </div>
     </div>
     </>
   )

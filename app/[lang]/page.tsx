@@ -53,6 +53,10 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             </Link>
             <a className="btn btn-outline-light" href="#start">{u.describe}</a>
           </div>
+          <p className="hero-owner">
+            <span>{d.home.providerTitle}</span>
+            <Link href={L('/providers')}>{d.home.providerCta}</Link>
+          </p>
         </div>
         <nav className="rail" aria-label={u.railLabel}>
           {RAIL.map((r, i) => {
@@ -72,7 +76,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
       <section className="sec" id="start" aria-labelledby="start-h">
         <div className="wrap narrow">
           <SecHead id="start-h" eyebrow={u.startEyebrow} title={d.home.title} lead={d.home.lead} />
-          <JobPrompt locale={lang} d={d.home} eqd={d.eq} equipment={equipment} />
+          <JobPrompt locale={lang} d={d.home} eqd={d.eq} rd={d.req} cd={d.contract} equipment={equipment} />
         </div>
       </section>
 

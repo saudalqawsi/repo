@@ -23,7 +23,7 @@ export default async function RequestPage({ params }: { params: Promise<{ lang: 
     <PageBanner locale={lang} title={d.req.title} slim />
     <div className="flow lift" style={{ maxWidth: 760 }}>
       <Suspense>
-        <RequestWizard locale={lang} d={d.req} eqd={d.eq} equipment={equipment} categories={categories} signedIn={Boolean(data?.claims)} />
+        <RequestWizard locale={lang} d={d.req} eqd={d.eq} cd={d.contract} ad={d.after} equipment={equipment} categories={categories} signedIn={Boolean(data?.claims)} />
       </Suspense>
     </div>
     </>

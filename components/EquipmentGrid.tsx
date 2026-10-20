@@ -65,6 +65,11 @@ export function EquipmentGrid({
                 <span className="eq-cat">{catName(e.category)}</span>
                 <h3>{locale === 'ar' ? e.name_ar : e.name_en}</h3>
                 <p className="eq-spec">{locale === 'ar' ? e.spec_ar : e.spec_en}</p>
+                <dl className="meta">
+                  <div><dt>{d.model}</dt><dd>{e.model ?? '—'}</dd></div>
+                  <div><dt>{d.year}</dt><dd>{e.model_year ?? '—'}</dd></div>
+                  <div><dt>{d.plate}</dt><dd>{e.plate ?? '—'}</dd></div>
+                </dl>
                 <span className="dots" aria-hidden="true"><i /><i /></span>
                 <span className="eq-add">{d.request}</span>
               </div>
