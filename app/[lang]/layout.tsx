@@ -12,6 +12,7 @@ import { notFound } from 'next/navigation'
 import { dirOf, isLocale, LOCALES, t } from '@/lib/i18n'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
+import { WhatsAppFab } from '@/components/WhatsAppFab'
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }))
@@ -41,6 +42,7 @@ export default async function RootLayout({ children, params }: { children: React
         <Header locale={lang} />
         <main id="main">{children}</main>
         <Footer locale={lang} />
+        <WhatsAppFab label={t(lang).contact.waLabel} text={t(lang).contact.waText} />
       </body>
     </html>
   )

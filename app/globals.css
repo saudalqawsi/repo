@@ -507,3 +507,35 @@ html[lang='ar'] .next-steps li::before { content: counter(n, arabic-indic); }
 
 /* hero rail: same box for every machine */
 .rail img { width: 50px; height: 38px; object-fit: contain; }
+
+/* ---------- Contact: phone + WhatsApp ---------- */
+.contact { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+.contact a { display: inline-flex; align-items: center; gap: 6px; text-decoration: none; color: inherit; font-weight: 600; }
+.contact bdi { font-variant-numeric: tabular-nums; letter-spacing: .02em; }
+.contact-top a { color: #fff; }
+.contact-top a:hover { color: var(--sun); }
+.contact-top a + a { padding-inline-start: 14px; border-inline-start: 1px solid #3a444b; }
+.contact-footer { flex-direction: column; align-items: flex-start; gap: 10px; }
+.contact-footer a { color: #fff; font-size: 17px; }
+.contact-footer a:hover { color: var(--sun); }
+.contact-buttons a { min-height: 44px; padding: 0 16px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: var(--r); }
+.contact-buttons a:hover { border-color: var(--ink); }
+.contact-buttons a:last-child { background: #1f9d55; border-color: #1f9d55; color: #fff; }
+.contact-buttons a:last-child:hover { background: #17834a; }
+.contact-note { margin-top: 16px; padding: 16px; background: var(--grey); display: flex; flex-direction: column; gap: 12px; }
+.contact-note p { color: var(--ink); font-weight: 600; }
+.mnav-contact { padding: 14px 0 4px; }
+.ftr-in { grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr); }
+@media (max-width: 760px) { .ftr-in { grid-template-columns: 1fr 1fr; } .ftr-contact { grid-column: 1 / -1; } }
+.topbar ul li, .topbar-end > a, .contact-top a { white-space: nowrap; }
+@media (max-width: 1380px) { .topbar ul li:nth-child(n + 2) { display: none; } }
+.hdr-call { display: none; }
+@media (max-width: 1020px) {
+  .menu-btn { padding-inline-start: 6px; }
+  .hdr-call { display: flex; align-items: center; gap: 6px; align-self: center; margin-inline-start: auto; min-height: 46px; padding: 0 12px; border: 1px solid var(--line); border-radius: var(--r); color: var(--ink); text-decoration: none; font-weight: 700; font-size: 14px; }
+  .hdr-box { grid-template-columns: minmax(0, 1fr) auto auto; }
+}
+@media (max-width: 420px) { .hdr-call bdi { display: none; } }
+.wa-fab { position: fixed; z-index: 30; bottom: 20px; inset-inline-end: 20px; width: 58px; height: 58px; border-radius: 50%; display: grid; place-items: center; background: #1f9d55; color: #fff; box-shadow: 0 14px 30px -12px rgba(0, 0, 0, .55); }
+.wa-fab:hover { background: #17834a; }
+@media (max-width: 560px) { .wa-fab { width: 52px; height: 52px; bottom: 14px; inset-inline-end: 14px; } }

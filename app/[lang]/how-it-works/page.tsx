@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { isLocale, t } from '@/lib/i18n'
 import { PageBanner } from '@/components/PageBanner'
 import { SecHead } from '@/components/SecHead'
+import { ContactNote } from '@/components/Contact'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -64,6 +65,7 @@ export default async function HowPage({ params }: { params: Promise<{ lang: stri
                 <p>{f.a}</p>
               </details>
             ))}
+            <ContactNote locale={lang} />
           </div>
         </div>
       </section>

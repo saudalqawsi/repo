@@ -83,7 +83,7 @@ export default async function AccountPage({ params }: { params: Promise<{ lang: 
         </ul>
       )}
       <div style={{ marginTop: 28 }}>
-        <NextSteps d={d.after} />
+        <NextSteps d={d.after} locale={lang} />
       </div>
     </div>
     </>

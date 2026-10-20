@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ProviderForm } from '@/components/ProviderForm'
 import { PageBanner } from '@/components/PageBanner'
 import { SecHead } from '@/components/SecHead'
+import { ContactNote } from '@/components/Contact'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -39,6 +40,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ lang
                 <li key={n}>{n}</li>
               ))}
             </ul>
+            <ContactNote locale={lang} lead={t(lang).contact.ownerLead} />
           </div>
           <ProviderForm locale={lang} d={d} signedIn={Boolean(data?.claims)} />
         </div>

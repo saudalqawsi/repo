@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
 import { Brand } from './Logo'
+import { ContactLinks } from './Contact'
 
 export function Footer({ locale }: { locale: Locale }) {
   const d = t(locale)
@@ -12,6 +13,10 @@ export function Footer({ locale }: { locale: Locale }) {
         <div className="ftr-brand">
           <span className="brand"><Brand label={locale === 'ar' ? 'شيول' : 'Shayul'} /></span>
           <p>{d.footer.tagline}</p>
+        </div>
+        <div className="ftr-contact">
+          <h2>{d.contact.title}</h2>
+          <ContactLinks locale={locale} variant="footer" />
         </div>
         <nav aria-label={d.ui.explore}>
           <h2>{d.ui.explore}</h2>

@@ -194,7 +194,7 @@ export function RequestWizard({
       <div className="panel" role="status">
         <h2 className="flow-h">{d.done}</h2>
         <p className="muted" style={{ marginBottom: 20 }}>{fill(d.doneText, { ref: done })}</p>
-        <NextSteps d={ad} />
+        <NextSteps d={ad} locale={locale} />
         <Link className="btn btn-primary" style={{ marginTop: 20 }} href={`/${locale}/account`}>{d.toAccount}</Link>
       </div>
     )
