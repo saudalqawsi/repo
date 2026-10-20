@@ -5,24 +5,29 @@ import { Brand } from './Logo'
 export function Footer({ locale }: { locale: Locale }) {
   const d = t(locale)
   const L = (p: string) => `/${locale}${p}`
+  const contact = process.env.NEXT_PUBLIC_CONTACT_EMAIL
   return (
     <footer className="ftr">
       <div className="wrap ftr-in">
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 10, maxWidth: 360 }}>
+        <div className="ftr-brand">
           <span className="brand"><Brand label={locale === 'ar' ? 'شيول' : 'Shayul'} /></span>
-          <p className="muted">{d.footer.tagline}</p>
+          <p>{d.footer.tagline}</p>
         </div>
-        <nav aria-label="footer">
+        <nav aria-label={d.ui.explore}>
+          <h2>{d.ui.explore}</h2>
           <Link href={L('/equipment')}>{d.nav.equipment}</Link>
           <Link href={L('/how-it-works')}>{d.nav.how}</Link>
           <Link href={L('/providers')}>{d.nav.providers}</Link>
-          {process.env.NEXT_PUBLIC_CONTACT_EMAIL ? (
-            <a href={`mailto:${process.env.NEXT_PUBLIC_CONTACT_EMAIL}`}>{d.footer.contact}</a>
-          ) : null}
+        </nav>
+        <nav aria-label={d.ui.account}>
+          <h2>{d.ui.account}</h2>
+          <Link href={L('/request')}>{d.nav.request}</Link>
+          <Link href={L('/account')}>{d.nav.myRequests}</Link>
+          {contact ? <a href={`mailto:${contact}`}>{d.footer.contact}</a> : null}
         </nav>
       </div>
-      <div className="wrap" style={{ marginTop: 28, display: 'flex', justifyContent: 'space-between', gap: 16, flexWrap: 'wrap' }}>
-        <span className="muted small">© 2026 · {d.footer.entity}</span>
+      <div className="ftr-bar">
+        <div className="wrap">© 2026 · {d.footer.entity}</div>
       </div>
     </footer>
   )

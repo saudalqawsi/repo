@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { PageBanner } from '@/components/PageBanner'
 import { notFound, redirect } from 'next/navigation'
 import { isLocale, t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/server'
@@ -36,9 +37,10 @@ export default async function AccountPage({ params }: { params: Promise<{ lang: 
   const fmt = new Intl.DateTimeFormat(lang === 'ar' ? 'ar-SA-u-ca-gregory' : 'en-GB', { day: 'numeric', month: 'long' })
 
   return (
-    <div className="wrap" style={{ maxWidth: 880, paddingBlock: '40px 64px' }}>
-      <div className="sec-h">
-        <h1 style={{ fontSize: 'clamp(1.8rem, 3.4vw, 2.6rem)' }}>{d.acc.title}</h1>
+    <>
+    <PageBanner locale={lang} title={d.acc.title} slim />
+    <div className="wrap" style={{ maxWidth: 880, paddingBlock: '40px 72px' }}>
+      <div className="acc-bar">
         <div style={{ display: 'flex', gap: 10 }}>
           <Link className="btn btn-primary btn-sm" href={`/${lang}/request`}>{d.acc.newRequest}</Link>
           <form action="/auth/signout" method="post">
@@ -72,5 +74,6 @@ export default async function AccountPage({ params }: { params: Promise<{ lang: 
         </ul>
       )}
     </div>
+    </>
   )
 }

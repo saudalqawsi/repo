@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { formatSar, rateFor, type Basis, type Category, type Equipment } from '@/lib/catalog'
+import { cutout, formatSar, rateFor, type Basis, type Category, type Equipment } from '@/lib/catalog'
 import { fill, type Dict, type Locale } from '@/lib/i18n'
 
 type DetailKey = 'ground' | 'access' | 'shift' | 'permits' | 'flex'
@@ -216,7 +216,7 @@ export function RequestWizard({
                           style={{ all: 'unset', cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: 6 }}
                           aria-pressed={q > 0}
                         >
-                          <img src={e.image.replace('/eq/', '/pk/')} alt="" loading="lazy" />
+                          <img src={cutout(e).src} alt="" loading="lazy" />
                           <b>{name(e)}</b>
                         </button>
                         {q > 0 ? (

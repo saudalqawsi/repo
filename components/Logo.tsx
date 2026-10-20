@@ -9,13 +9,16 @@ export function LoaderMark({ size = 30, color = '#121a21' }: { size?: number; co
   )
 }
 
-export function Brand({ label }: { label: string }) {
+export function Brand({ label, sub }: { label: string; sub?: string }) {
   return (
     <>
       <span className="brand-mark">
         <LoaderMark />
       </span>
-      <span>{label}</span>
+      <span className="brand-text">
+        <b>{label}</b>
+        {sub ? <small>{sub}</small> : null}
+      </span>
     </>
   )
 }

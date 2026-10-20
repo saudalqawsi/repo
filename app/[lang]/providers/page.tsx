@@ -3,6 +3,8 @@ import { notFound } from 'next/navigation'
 import { isLocale, t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/server'
 import { ProviderForm } from '@/components/ProviderForm'
+import { PageBanner } from '@/components/PageBanner'
+import { SecHead } from '@/components/SecHead'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -18,25 +20,20 @@ export default async function ProvidersPage({ params }: { params: Promise<{ lang
 
   return (
     <>
-      <div className="wrap phead">
-        <h1>{d.title}</h1>
-        <p>{d.lead}</p>
-      </div>
-      <section className="sec" style={{ paddingTop: 32 }}>
+      <PageBanner locale={lang} title={d.title} lead={d.lead} image="/img/eq/excavator.jpg" />
+      <section className="sec">
         <div className="wrap side">
           <div>
-            <div className="stage" style={{ minHeight: 280, marginBottom: 28 }}>
-              <img src="/img/eq/bulldozer-d9.jpg" alt={lang === 'ar' ? 'بلدوزر في موقع عمل' : 'Bulldozer on site'} />
-            </div>
-            <div className="two" style={{ gridTemplateColumns: '1fr' }}>
+            <img className="prov-img" src="/img/cut/telehandler.webp" alt="" />
+            <div className="gcards gcards-1">
               {d.benefits.map((b) => (
-                <div className="g" key={b.t}>
+                <div className="gcard" key={b.t}>
                   <h3>{b.t}</h3>
                   <p className="muted">{b.d}</p>
                 </div>
               ))}
             </div>
-            <h2 style={{ fontSize: 20, margin: '28px 0 6px' }}>{d.needTitle}</h2>
+            <h2 className="h-sm">{d.needTitle}</h2>
             <ul className="list">
               {d.needs.map((n) => (
                 <li key={n}>{n}</li>

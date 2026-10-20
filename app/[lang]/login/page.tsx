@@ -4,6 +4,7 @@ import { isLocale, t } from '@/lib/i18n'
 import { createClient } from '@/lib/supabase/server'
 import { LoginFlow } from '@/components/LoginFlow'
 import { safeNext } from '@/lib/safe-next'
+import { PageBanner } from '@/components/PageBanner'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -24,8 +25,11 @@ export default async function LoginPage({
   const { data } = await supabase.auth.getClaims()
   if (data?.claims) redirect(safeNext(next ?? null, lang))
   return (
-    <div className="flow" style={{ maxWidth: 480 }}>
-      <LoginFlow locale={lang} d={t(lang).auth} next={next ?? null} />
-    </div>
+    <>
+      <PageBanner locale={lang} title={t(lang).auth.title} slim />
+      <div className="flow lift" style={{ maxWidth: 480 }}>
+        <LoginFlow locale={lang} d={t(lang).auth} next={next ?? null} />
+      </div>
+    </>
   )
 }

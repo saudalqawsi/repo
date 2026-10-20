@@ -2,6 +2,10 @@ import '@fontsource/ibm-plex-sans-arabic/400.css'
 import '@fontsource/ibm-plex-sans-arabic/500.css'
 import '@fontsource/ibm-plex-sans-arabic/600.css'
 import '@fontsource/ibm-plex-sans-arabic/700.css'
+import '@fontsource/titillium-web/300.css'
+import '@fontsource/titillium-web/400.css'
+import '@fontsource/titillium-web/600.css'
+import '@fontsource/titillium-web/700.css'
 import '../globals.css'
 import type { Metadata, Viewport } from 'next'
 import { notFound } from 'next/navigation'
@@ -25,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   }
 }
 
-export const viewport: Viewport = { themeColor: '#f3f5f6', width: 'device-width', initialScale: 1 }
+export const viewport: Viewport = { themeColor: '#1d2329', width: 'device-width', initialScale: 1 }
 
 export default async function RootLayout({ children, params }: { children: React.ReactNode; params: Promise<{ lang: string }> }) {
   const { lang } = await params

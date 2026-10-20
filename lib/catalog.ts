@@ -30,3 +30,13 @@ export function rateFor(e: Equipment, basis: Basis): number | null {
   if (basis === 'monthly') return e.monthly_rate_indicative ?? null
   return null
 }
+
+// Studio cut-outs (transparent background) exist for most machines.
+const CUTOUTS = new Set([
+  'bobcat-cutter', 'bobcat-sweeper', 'bobcat-trencher', 'crusher-excavator', 'excavator', 'grader-g14',
+  'jcb-backhoe', 'jcb-forklift', 'loader-36', 'loader-50', 'loader-66', 'loader-80', 'loader-920',
+  'man-lift', 'scissor-lift', 'telehandler', 'vibratory-roller', 'walk-roller', 'dump-truck',
+])
+export function cutout(e: Pick<Equipment, 'slug' | 'image'>): { src: string; cut: boolean } {
+  return CUTOUTS.has(e.slug) ? { src: `/img/cut/${e.slug}.webp`, cut: true } : { src: e.image, cut: false }
+}
