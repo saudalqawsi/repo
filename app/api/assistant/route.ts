@@ -160,8 +160,9 @@ export async function POST(req: NextRequest) {
       result = null
     }
   }
+  // the rule-based plan always runs: it gives the size of the work and safe defaults
+  const plan = planJob(text, lang, equipment)
   if (!result) {
-    const plan = planJob(text, lang, equipment)
     if (plan.items.length) {
       result = { items: plan.items, basis: plan.basis, duration_value: plan.duration_value, note: plan.note, clean_text: null }
     } else {
@@ -187,5 +188,16 @@ export async function POST(req: NextRequest) {
       permits: a.permits ?? fallback.permits,
     },
   }
-  return NextResponse.json(result, { headers: { 'cache-control': 'no-store' } })
+  const digs = plan.jobs.some((j) => j === 'excavate' || j === 'trench' || j === 'clear' || j === 'mill' || j === 'break')
+  // safe assumptions for anything not stated; the customer sees them highlighted and can change them
+  const assume = {
+    ground: plan.rocky ? 'rock' : 'sand',
+    access: plan.site === 'small' ? 'medium' : 'wide',
+    shift: 'day',
+    permits: digs ? 'pending' : 'not_required',
+  }
+  return NextResponse.json(
+    { ...result, scope: plan.scope, jobs: plan.jobs, site_size: plan.site, assume },
+    { headers: { 'cache-control': 'no-store' } },
+  )
 }

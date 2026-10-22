@@ -5,13 +5,25 @@ import dynamic from 'next/dynamic'
 import { cutout, formatSar, rateFor, type Basis, type Equipment } from '@/lib/catalog'
 import { durationPhrase, type Dict, type Locale } from '@/lib/i18n'
 import { assumeStart, DETAIL_ENUMS, type Attrs } from '@/lib/attrs'
+import { advice, scopeLine } from '@/lib/advice'
+import type { Scope } from '@/lib/planner'
 import { SampleContract } from './SampleContract'
 import type { Pin } from './SiteMap'
 
 const SiteMap = dynamic(() => import('./SiteMap').then((m) => m.SiteMap), { ssr: false, loading: () => <div className="map-inline"><div className="map-box" /></div> })
 
 type Suggestion = { slug: string; qty: number; why?: string }
-type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; note?: string | null; clean_text?: string | null; attrs?: Partial<Attrs> }
+type Result = {
+  items: Suggestion[]
+  basis: Basis
+  duration_value: number | null
+  note?: string | null
+  clean_text?: string | null
+  attrs?: Partial<Attrs>
+  scope?: Scope | null
+  jobs?: string[]
+  assume?: Partial<Record<'ground' | 'access' | 'shift' | 'permits', string>>
+}
 type DetailKey = keyof typeof DETAIL_ENUMS
 /** What the customer sees and can edit after the assistant answers. */
 type Edit = {
@@ -32,11 +44,13 @@ function toEdit(r: Result): Edit {
   const a = r.attrs ?? {}
   const details: Partial<Record<DetailKey, string>> = {}
   const assumed: (DetailKey | 'start')[] = []
-  for (const k of DETAIL_KEYS) if (a[k]) details[k] = a[k] as string
-  // safe assumption: one standard shift is a day shift
-  if (!details.shift) {
-    details.shift = 'day'
-    assumed.push('shift')
+  for (const k of DETAIL_KEYS) {
+    if (a[k]) details[k] = a[k] as string
+    else {
+      // safe assumption, kept highlighted until the customer confirms or changes it
+      details[k] = r.assume?.[k] ?? (k === 'shift' ? 'day' : undefined)
+      if (details[k]) assumed.push(k)
+    }
   }
   // safe assumption: three days to match and sign, landing on a working day
   let start = a.start_date ?? ''
@@ -273,6 +287,8 @@ export function JobPrompt({
   let brief = ''
   const missing: { id: string; label: string }[] = []
   const assumedNames: string[] = []
+  let scopeText = ''
+  let tips: string[] = []
   if (ed) {
     const machines = list(lines.map((l) => (l.qty > 1 ? `${name(l.e)} × ${num(l.qty)}` : name(l.e))))
     const parts: string[] = [machines]
@@ -290,6 +306,26 @@ export function JobPrompt({
     brief = s1
     if (ed.assumed.includes('start')) assumedNames.push(locale === 'ar' ? `البدء ${fmtDate(ed.start)}` : `a start on ${fmtDate(ed.start)}`)
     for (const k of DETAIL_KEYS) if (ed.assumed.includes(k)) assumedNames.push(`${d.attrs[k]}: ${optLabel(k, ed.details[k])}`)
+    const sc = result?.scope ?? null
+    if (sc) {
+      const m = lines.find((l) => l.e.slug === sc.machine) ?? lines[0]
+      scopeText = scopeLine(locale, sc, m?.qty ?? 1, m ? name(m.e) : '')
+    }
+    const m0 = sc ? lines.find((l) => l.e.slug === sc.machine) ?? lines[0] : undefined
+    tips = advice({
+      lang: locale,
+      scope: sc,
+      qty: m0?.qty ?? 1,
+      machineName: m0 ? name(m0.e) : '',
+      basis,
+      dur,
+      jobs: result?.jobs ?? [],
+      text,
+      start: ed.start,
+      today: todayIso(),
+      details: ed.details,
+      hasBreaker: lines.some((l) => l.e.slug === 'crusher-excavator'),
+    })
     if (!ed.site) missing.push({ id: 'a-site', label: d.attrs.site })
     else if (!ed.pin) missing.push({ id: 'a-site', label: d.briefPin })
     if (basis !== 'lump_sum' && !dur) missing.push({ id: 'a-dur', label: d.attrs.duration })
@@ -456,11 +492,8 @@ export function JobPrompt({
                       onPin={(p) => setEdit((x) => (x ? { ...x, pin: p, site: x.site || `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` } : x))}
                     />
                   </div>
-                  <div data-empty={!ed.start}>
-                    <label htmlFor="a-start">
-                      {d.attrs.start}
-                      {ed.assumed.includes('start') ? <span className="assumed">{d.assumed}</span> : null}
-                    </label>
+                  <div data-empty={!ed.start || ed.assumed.includes('start')}>
+                    <label htmlFor="a-start">{d.attrs.start}</label>
                     <input id="a-start" className="input" type="date" min={todayIso()} value={ed.start} onChange={(e) => setEdit((x) => (x ? { ...x, start: e.target.value, assumed: x.assumed.filter((a) => a !== 'start') } : x))} />
                   </div>
                   <div data-empty={basis !== 'lump_sum' && !dur}>
@@ -490,11 +523,8 @@ export function JobPrompt({
                     </div>
                   </div>
                   {DETAIL_KEYS.map((k) => (
-                    <div key={k} data-empty={!ed.details[k]}>
-                      <label htmlFor={`a-${k}`}>
-                        {d.attrs[k]}
-                        {ed.assumed.includes(k) ? <span className="assumed">{d.assumed}</span> : null}
-                      </label>
+                    <div key={k} data-empty={!ed.details[k] || ed.assumed.includes(k)}>
+                      <label htmlFor={`a-${k}`}>{d.attrs[k]}</label>
                       <select id={`a-${k}`} className="input" value={ed.details[k] ?? ''} onChange={(e) => setDetail(k, e.target.value)}>
                         <option value="">{d.choose}</option>
                         {(DETAIL_ENUMS[k] as readonly string[]).map((v) => (
@@ -510,6 +540,7 @@ export function JobPrompt({
             {ed ? (
               <div className="brief" role="status">
                 <b className="sub-h">{d.briefTitle}</b>
+                {scopeText ? <p className="brief-scope">{scopeText}</p> : null}
                 <p>{brief}</p>
                 {assumedNames.length ? <p className="brief-assumed">{d.briefAssumed} {list(assumedNames)}. {d.briefChange}</p> : null}
                 {missing.length ? (
@@ -526,6 +557,14 @@ export function JobPrompt({
                 ) : (
                   <p className="brief-ok">{d.briefComplete}</p>
                 )}
+                {tips.length ? (
+                  <div className="brief-tips">
+                    <b>{d.briefTips}</b>
+                    <ul>
+                      {tips.map((t) => <li key={t}>{t}</li>)}
+                    </ul>
+                  </div>
+                ) : null}
               </div>
             ) : null}
 

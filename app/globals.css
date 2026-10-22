@@ -561,7 +561,8 @@ html[lang='en'] .fleet b { text-transform: uppercase; letter-spacing: .04em; fon
 .facts-row li { padding: 4px 12px; display: flex; flex-direction: column; align-items: center; text-align: center; gap: 6px; }
 .facts-row li + li { border-inline-start: 1px solid var(--line); }
 .facts-row b { font-size: clamp(28px, 3vw, 40px); line-height: 1; color: var(--ink); font-variant-numeric: tabular-nums; }
-.facts-row span { font-size: 13.5px; color: var(--steel); max-width: 14em; }
+.facts-row span { font-size: 15px; font-weight: 600; line-height: 1.35; color: var(--ink); max-width: 12em; text-wrap: balance; }
+.facts-row li { gap: 10px !important; padding-block: 8px !important; }
 @media (max-width: 900px) {
   .fleet { flex-wrap: wrap; row-gap: 24px; }
   .fleet li { flex: 0 0 33.333% !important; }
@@ -607,7 +608,15 @@ html[lang='en'] .fleet b { text-transform: uppercase; letter-spacing: .04em; fon
 .contact-footer { flex-direction: column; align-items: flex-start; gap: 12px; }
 .contact-footer a { color: #a9b2b8; font-size: 15px; font-weight: 400; }
 .contact-footer a:hover { color: var(--sun); }
-@media (max-width: 980px) { .ftr-in { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; } .ftr-brand { grid-column: 1 / -1; } }
+@media (max-width: 980px) {
+  .ftr-in { grid-template-columns: repeat(2, minmax(0, 1fr)); row-gap: 36px; }
+  .ftr-brand { grid-column: 1 / -1; order: 0; }
+  /* renters and providers side by side first, then explore and contact */
+  .ftr-renter { order: 1; }
+  .ftr-owner { order: 2; }
+  .ftr nav:not(.ftr-role) { order: 3; }
+  .ftr-contact { order: 4; }
+}
 
 @media (max-width: 560px) { .hero-ctas { flex-direction: column; align-items: stretch; } .hero-ctas .btn { width: 100%; } .btn-tab { justify-content: space-between; } }
 
@@ -831,3 +840,9 @@ html[data-qbar] #intro, html[data-qbar] #vision, html[data-qbar] #fix, html[data
 .brief-missing { font-size: 14.5px; }
 .brief-missing .btn-link { min-height: 0; font-weight: 700; color: var(--sun-deep); }
 .brief-ok { font-weight: 600; color: var(--ok) !important; }
+
+.brief-scope { font-weight: 600; color: var(--ink) !important; padding-bottom: 8px; border-bottom: 1px dashed var(--line); }
+.brief-tips { margin-top: 4px; padding-top: 10px; border-top: 1px dashed var(--line); display: grid; gap: 6px; }
+.brief-tips b { font-size: 14px; color: var(--ink); }
+.brief-tips ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; font-size: 14px; line-height: 1.7; color: var(--text); }
+.brief-tips li::marker { color: var(--sun-deep); }

@@ -45,7 +45,7 @@ export function SiteMap({
       const L = (await import('leaflet')).default
       if (cancelled || !box.current) return
       LRef.current = L
-      const map = L.map(box.current, { scrollWheelZoom: false }).setView(pin ? [pin.lat, pin.lng] : RIYADH, pin ? 16 : 11)
+      const map = L.map(box.current, { scrollWheelZoom: true, touchZoom: true, doubleClickZoom: true, zoomSnap: 0.5 }).setView(pin ? [pin.lat, pin.lng] : RIYADH, pin ? 16 : 11)
       L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',

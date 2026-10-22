@@ -9,7 +9,21 @@ import { guessBasis, normalize } from './matcher'
 
 type Lang = 'ar' | 'en'
 type Pick = { slug: string; qty: number; why: string }
-export type Plan = { items: Pick[]; basis: Basis; duration_value: number | null; note: string | null; jobs: Job[] }
+/** The quantity of work behind the estimate, so the customer can see the size of the job. */
+export type Scope = {
+  kind: 'excavate' | 'trench' | 'level' | 'compact' | 'load'
+  amount: number
+  unit: 'm3' | 'm' | 'm2'
+  /** true when the size came from typical values rather than the customer's words */
+  typical: boolean
+  area?: number
+  depth?: number
+  /** machine that sets the pace, and its output per standard shift */
+  machine: string
+  rate: number
+  extraDays: number
+}
+export type Plan = { items: Pick[]; basis: Basis; duration_value: number | null; note: string | null; jobs: Job[]; scope: Scope | null; site: 'small' | 'large' | 'unknown'; rocky: boolean }
 export type Job = 'excavate' | 'trench' | 'level' | 'load' | 'break' | 'lift' | 'height' | 'compact' | 'sweep' | 'mill' | 'clear'
 
 const JOB_RX: Record<Job, RegExp> = {
@@ -146,10 +160,12 @@ export function planJob(text: string, lang: Lang, equipment: Equipment[]): Plan 
   let days: number | null = null
   let note: string | null = null
   let noteDays = 0
-  const setNote = (d: number, text: string) => {
+  let scope: Scope | null = null
+  const setNote = (d: number, text: string, sc?: Scope) => {
     if (d >= noteDays) {
       noteDays = d
       note = text
+      if (sc) scope = sc
     }
   }
 
@@ -166,7 +182,7 @@ export function planJob(text: string, lang: Lang, equipment: Equipment[]): Plan 
       add(v > 1500 ? 'loader-50' : 'loader-36', 1, t.loaderSpoil)
       const dd = Math.max(2, Math.ceil(v / (RATES.excavator_m3_day * qty)) + (rocky ? 2 : 0))
       days = Math.max(days ?? 0, dd)
-      setNote(dd, area || volume || depth ? t.est(v, dd) : t.estDefault(dd))
+      setNote(dd, area || volume || depth ? t.est(v, dd) : t.estDefault(dd), { kind: 'excavate', amount: v, unit: 'm3', typical: !(area || volume || depth), area: volume ? undefined : footprint, depth: volume ? undefined : d, machine: 'excavator', rate: RATES.excavator_m3_day, extraDays: rocky ? 2 : 0 })
     }
     if (job === 'trench') {
       const narrow = /(كيابل|كابل|cable|conduit|ضيق|narrow)/.test(n)
@@ -174,27 +190,33 @@ export function planJob(text: string, lang: Lang, equipment: Equipment[]): Plan 
       const L = length ?? 60
       const dd = Math.max(1, Math.ceil(L / RATES.trench_m_day))
       days = Math.max(days ?? 0, dd)
-      setNote(dd, length ? t.estLen(L, dd) : t.estDefault(dd))
+      setNote(dd, length ? t.estLen(L, dd) : t.estDefault(dd), { kind: 'trench', amount: L, unit: 'm', typical: !length, machine: narrow ? 'bobcat-trencher' : 'jcb-backhoe', rate: RATES.trench_m_day, extraDays: 0 })
     }
     if (job === 'level') {
       const A = area ?? (small ? 600 : large ? 5000 : 1000)
       if (A > 1500 || large) add('grader-g14', 1, t.grader)
       else add(small ? 'loader-920' : 'loader-36', 1, t.loaderLevel)
-      const dd = Math.max(1, Math.ceil(A / (A > 1500 || large ? RATES.grader_m2_day : RATES.loader_level_m2_day)))
+      const big = A > 1500 || large
+      const rate = big ? RATES.grader_m2_day : RATES.loader_level_m2_day
+      const dd = Math.max(1, Math.ceil(A / rate))
       days = Math.max(days ?? 0, dd)
-      setNote(dd, area ? t.estArea(A, dd) : t.estDefault(dd))
+      setNote(dd, area ? t.estArea(A, dd) : t.estDefault(dd), { kind: 'level', amount: A, unit: 'm2', typical: !area, machine: big ? 'grader-g14' : small ? 'loader-920' : 'loader-36', rate, extraDays: 0 })
     }
     if (job === 'compact') {
       const A = area ?? (small ? 300 : 1500)
       add(A < 400 || /(ضيق|tight|narrow)/.test(n) ? 'walk-roller' : 'vibratory-roller', 1, A < 400 ? t.walkRoller : t.roller)
       const dc = Math.max(1, Math.ceil(A / RATES.roller_m2_day))
       days = Math.max(days ?? 0, dc)
-      setNote(dc, area ? t.estArea(A, dc) : t.estDefault(dc))
+      setNote(dc, area ? t.estArea(A, dc) : t.estDefault(dc), { kind: 'compact', amount: A, unit: 'm2', typical: !area, machine: A < 400 ? 'walk-roller' : 'vibratory-roller', rate: RATES.roller_m2_day, extraDays: 0 })
     }
     if (job === 'load') {
       const big = (volume ?? 0) > 1500 || large
       add(big ? 'loader-66' : small ? 'loader-36' : 'loader-50', 1, t.loader)
-      if (volume) days = Math.max(days ?? 0, Math.max(1, Math.ceil(volume / RATES.loader_m3_day)))
+      if (volume) {
+        const dl = Math.max(1, Math.ceil(volume / RATES.loader_m3_day))
+        days = Math.max(days ?? 0, dl)
+        setNote(dl, t.estDefault(dl), { kind: 'load', amount: volume, unit: 'm3', typical: false, machine: big ? 'loader-66' : small ? 'loader-36' : 'loader-50', rate: RATES.loader_m3_day, extraDays: 0 })
+      }
     }
     if (job === 'break') {
       add('crusher-excavator', 1, t.breaker)
@@ -213,9 +235,9 @@ export function planJob(text: string, lang: Lang, equipment: Equipment[]): Plan 
   // levelling a plot normally ends with compaction
   if (jobs.includes('level') && !jobs.includes('compact') && /(اسفلت|بلاط|انترلوك|asphalt|paving|interlock)/.test(n)) add('vibratory-roller', 1, t.roller)
 
-  const stated = /(\d+\s*(يوم|ايام|اسبوع|اسابيع|شهر|اشهر|day|week|month))|يومين|اسبوعين|شهرين|مقطوع|lump|fixed price/.test(n)
+  const stated = /(\d+\s*(يوم|ايام|اسبوع|اسابيع|شهر|اشهر|day|week|month))|يومين|اسبوعين|شهرين|مقطوع|lump|fixed price|(لمده|مده|for a|for one)\s*(يوم|اسبوع|شهر|day|week|month)/.test(n)
   const timing = stated ? guessBasis(text) : days ? toBasis(days) : guessBasis(text)
-  return { items: items.slice(0, 4), ...timing, note: stated ? null : note, jobs }
+  return { items: items.slice(0, 4), ...timing, note: stated ? null : note, jobs, scope, site: small ? 'small' : large ? 'large' : 'unknown', rocky }
 }
 
 /** Plain-language rules handed to the AI so it plans the same way. */
