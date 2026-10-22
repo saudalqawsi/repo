@@ -66,7 +66,7 @@ export async function Header({ locale }: { locale: Locale }) {
           <Mark size={40} />
           <b>{locale === 'ar' ? 'شيول' : 'Shayul'}</b>
         </Link>
-        <NavLinks links={links.slice(0, 2)} className="qbar-links" />
+        <NavLinks links={links} className="qbar-links" />
         <div className="qbar-end">
           <Link className="qbar-acc" href={account.href}>{account.label}</Link>
           <Suspense fallback={null}>

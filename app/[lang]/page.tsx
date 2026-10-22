@@ -9,12 +9,14 @@ import { Mark } from '@/components/Logo'
 import { photoProps } from '@/lib/photos'
 import { FEATURE_ICONS, IconRenter } from '@/components/Icons'
 
-const RAIL = [
-  { cat: 'loaders', img: 'loader-66' },
-  { cat: 'excavators', img: 'excavator' },
-  { cat: 'lifting', img: 'scissor-lift' },
-  { cat: 'grading', img: 'vibratory-roller' },
-]
+/** One tile per equipment category, in the same order as the equipment page filters. */
+const RAIL_IMG: Record<string, string> = {
+  loaders: 'loader-66',
+  excavators: 'excavator',
+  compact: 'bobcat-sweeper',
+  grading: 'vibratory-roller',
+  lifting: 'scissor-lift',
+}
 
 export default async function Home({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
@@ -59,13 +61,13 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           </p>
         </div>
         <nav className="rail" aria-label={u.railLabel}>
-          {RAIL.map((r, i) => {
-            const c = categories.find((x) => x.slug === r.cat)
-            if (!c) return null
+          {usedCats.map((c, i) => {
+            const img = RAIL_IMG[c.slug] ?? equipment.find((e) => e.category === c.slug)?.slug
+            if (!img) return null
             const label = lang === 'ar' ? c.name_ar : c.name_en
             return (
-              <Link key={r.cat} href={L(`/equipment?cat=${r.cat}`)} className={i === 0 ? 'on' : undefined} title={label} aria-label={label}>
-                <img src={`/img/cut/${r.img}.webp`} alt="" />
+              <Link key={c.slug} href={L(`/equipment?cat=${c.slug}`)} className={i === 0 ? 'on' : undefined} title={label} aria-label={label}>
+                <img src={`/img/cut/${img}.webp`} alt="" />
                 <span className="rail-label" aria-hidden="true">{label}</span>
               </Link>
             )
