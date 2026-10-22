@@ -822,3 +822,12 @@ html[data-qbar] #intro, html[data-qbar] #vision, html[data-qbar] #fix, html[data
 .map-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 18px; border-top: 1px solid var(--line); }
 .map-pin span { position: absolute; left: 2px; top: 0; width: 24px; height: 24px; background: var(--sun); border: 3px solid var(--ink); border-radius: 50% 50% 50% 0; transform: rotate(-45deg); box-shadow: 0 6px 12px -4px rgba(0, 0, 0, .5); }
 .map-box .leaflet-container, .map-box { font: inherit; }
+.map-inline { margin-top: 8px; border: 1px solid var(--line); border-radius: 10px; overflow: hidden; background: #fff; isolation: isolate; }
+.map-inline .map-box { height: clamp(220px, 34vw, 300px); }
+.map-inline .map-hint { margin: 0; padding: 8px 12px; display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; font-size: 13.5px; color: var(--text); border-top: 1px solid var(--line); }
+.brief { border: 1px solid var(--line); border-inline-start: 4px solid var(--sun); background: #fffdf5; padding: 16px 18px; display: grid; gap: 8px; }
+.brief p { margin: 0; line-height: 1.75; color: var(--text); }
+.brief-assumed { font-size: 14px; color: var(--steel) !important; }
+.brief-missing { font-size: 14.5px; }
+.brief-missing .btn-link { min-height: 0; font-weight: 700; color: var(--sun-deep); }
+.brief-ok { font-weight: 600; color: var(--ok) !important; }

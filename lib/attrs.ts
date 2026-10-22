@@ -78,6 +78,30 @@ export function parseStart(n: string, today: string): string | null {
   return null
 }
 
+/**
+ * Start date to assume when the customer gives none: three days to match a provider and sign,
+ * landing on a working day. A weekend inside the buffer pushes Sunday to Monday,
+ * so a Thursday request starts Monday.
+ */
+export function assumeStart(today: string): string {
+  let d = addDays(today, 3)
+  const wd = weekdayOf(d)
+  if (wd === 5) d = addDays(d, 2) // Friday -> Sunday
+  else if (wd === 6) d = addDays(d, 1) // Saturday -> Sunday
+  else if (wd === 0) d = addDays(d, 1) // Sunday right after a weekend buffer -> Monday
+  return d
+}
+
+/** The work itself, without the place, dates and duration that follow it: "حفر قبو لفيلا". */
+export function workPhrase(text: string): string {
+  const cut = text.split(/\s(?:في\s+حي|بحي|في\s+(?=[\u0621-\u064A]+\s)|لمدة|مدة|بعد|نبدا|نبدأ|ابتداء|من\s+يوم|يوم\s+ال|بكره|بكرة|غدا|الاسبوع|الأسبوع|in\s+(?:al|the)?|at\s|for\s+\d|for\s+(?:a|one|two)|starting|from\s|next\s|tomorrow|today|this\s)/i)[0]
+  return cut
+    .replace(/^(ابي|ابغى|أبي|أبغى|نبي|نبغى|محتاج|احتاج|أحتاج|i need|i want|we need|need)\s+/i, '')
+    .replace(/[،,.\s]+$/, '')
+    .trim()
+    .slice(0, 120)
+}
+
 /** Keyword fallback for when no AI key is configured. */
 export function extractAttrs(text: string): Attrs {
   const n = normalize(text)

@@ -4,11 +4,11 @@ import { useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import { cutout, formatSar, rateFor, type Basis, type Equipment } from '@/lib/catalog'
 import { durationPhrase, type Dict, type Locale } from '@/lib/i18n'
-import { DETAIL_ENUMS, type Attrs } from '@/lib/attrs'
+import { assumeStart, DETAIL_ENUMS, type Attrs } from '@/lib/attrs'
 import { SampleContract } from './SampleContract'
 import type { Pin } from './SiteMap'
 
-const SiteMap = dynamic(() => import('./SiteMap').then((m) => m.SiteMap), { ssr: false })
+const SiteMap = dynamic(() => import('./SiteMap').then((m) => m.SiteMap), { ssr: false, loading: () => <div className="map-inline"><div className="map-box" /></div> })
 
 type Suggestion = { slug: string; qty: number; why?: string }
 type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; note?: string | null; clean_text?: string | null; attrs?: Partial<Attrs> }
@@ -23,7 +23,7 @@ type Edit = {
   basis: Basis
   dur: number | null
   details: Partial<Record<DetailKey, string>>
-  assumed: DetailKey[]
+  assumed: (DetailKey | 'start')[]
 }
 const DETAIL_KEYS = Object.keys(DETAIL_ENUMS) as DetailKey[]
 const todayIso = () => new Date(Date.now() + 3 * 3600_000).toISOString().slice(0, 10)
@@ -31,19 +31,25 @@ const todayIso = () => new Date(Date.now() + 3 * 3600_000).toISOString().slice(0
 function toEdit(r: Result): Edit {
   const a = r.attrs ?? {}
   const details: Partial<Record<DetailKey, string>> = {}
-  const assumed: DetailKey[] = []
+  const assumed: (DetailKey | 'start')[] = []
   for (const k of DETAIL_KEYS) if (a[k]) details[k] = a[k] as string
   // safe assumption: one standard shift is a day shift
   if (!details.shift) {
     details.shift = 'day'
     assumed.push('shift')
   }
+  // safe assumption: three days to match and sign, landing on a working day
+  let start = a.start_date ?? ''
+  if (!start) {
+    start = assumeStart(todayIso())
+    assumed.push('start')
+  }
   return {
     qty: Object.fromEntries(r.items.map((i) => [i.slug, i.qty])),
     summary: a.summary ?? '',
     site: a.site ?? '',
     pin: null,
-    start: a.start_date ?? '',
+    start,
     basis: r.basis,
     dur: r.duration_value,
     details,
@@ -93,7 +99,6 @@ export function JobPrompt({
   const [voiceMsg, setVoiceMsg] = useState<string | null>(null)
   const [showContract, setShowContract] = useState(false)
   const [edit, setEdit] = useState<Edit | null>(null)
-  const [mapOpen, setMapOpen] = useState(false)
   const areaRef = useRef<HTMLTextAreaElement>(null)
   const cardRef = useRef<HTMLDivElement>(null)
   const recRef = useRef<SpeechRec | null>(null)
@@ -260,6 +265,36 @@ export function JobPrompt({
         }).toString()
       : '#'
   const sar = (n: number) => `${formatSar(n, locale)} ${eqd.sar}`
+  const list = (xs: string[]) => new Intl.ListFormat(locale === 'ar' ? 'ar' : 'en', { style: 'long', type: 'conjunction' }).format(xs)
+  const fmtDate = (iso: string) =>
+    new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA-u-ca-gregory' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date(iso + 'T12:00:00'))
+
+  // plain-language summary of the request, with what is assumed and what is still missing
+  let brief = ''
+  const missing: { id: string; label: string }[] = []
+  const assumedNames: string[] = []
+  if (ed) {
+    const machines = list(lines.map((l) => (l.qty > 1 ? `${name(l.e)} × ${num(l.qty)}` : name(l.e))))
+    const parts: string[] = [machines]
+    if (ed.summary) parts.push(locale === 'ar' ? (ed.summary.startsWith('ال') ? `ل${ed.summary.slice(1)}` : `ل${ed.summary}`) : `for the job: ${ed.summary.charAt(0).toLowerCase()}${ed.summary.slice(1)}`)
+    if (ed.site) parts.push(locale === 'ar' ? `في ${ed.site}` : `at ${ed.site}`)
+    let s1 = parts.join(locale === 'ar' ? '، ' : ', ')
+    const when: string[] = []
+    if (ed.start) when.push(locale === 'ar' ? `يبدأ ${fmtDate(ed.start)}` : `starting ${fmtDate(ed.start)}`)
+    if (durationText) when.push(locale === 'ar' ? `لمدة ${durationText}` : `for ${durationText}`)
+    const shift = optLabel('shift', ed.details.shift)
+    if (shift) when.push(locale === 'ar' ? `وردية ${shift}` : `${shift.toLowerCase()} shift`)
+    if (when.length) s1 += (locale === 'ar' ? '، ' : ', ') + when.join(locale === 'ar' ? '، ' : ', ')
+    s1 += '.'
+    if (estimate) s1 += locale === 'ar' ? ` التكلفة التقديرية ${sar(estimate.total)} شاملة الضريبة.` : ` Indicative cost ${sar(estimate.total)} including VAT.`
+    brief = s1
+    if (ed.assumed.includes('start')) assumedNames.push(locale === 'ar' ? `البدء ${fmtDate(ed.start)}` : `a start on ${fmtDate(ed.start)}`)
+    for (const k of DETAIL_KEYS) if (ed.assumed.includes(k)) assumedNames.push(`${d.attrs[k]}: ${optLabel(k, ed.details[k])}`)
+    if (!ed.site) missing.push({ id: 'a-site', label: d.attrs.site })
+    else if (!ed.pin) missing.push({ id: 'a-site', label: d.briefPin })
+    if (basis !== 'lump_sum' && !dur) missing.push({ id: 'a-dur', label: d.attrs.duration })
+    for (const k of DETAIL_KEYS) if (!ed.details[k]) missing.push({ id: `a-${k}`, label: d.attrs[k] })
+  }
   const unitWord = (b: Basis) => (b === 'weekly' ? eqd.perWeek : b === 'monthly' ? eqd.perMonth : eqd.perDay)
 
   return (
@@ -412,17 +447,21 @@ export function JobPrompt({
                   </div>
                   <div className="attrs-wide" data-empty={!ed.site}>
                     <label htmlFor="a-site">{d.attrs.site}</label>
-                    <div className="site-row">
-                      <input id="a-site" className="input" value={ed.site} maxLength={200} onChange={(e) => patch({ site: e.target.value, pin: null })} placeholder={rd.sitePlaceholder} />
-                      <button type="button" className="btn btn-ghost btn-sm map-btn" onClick={() => setMapOpen(true)}>
-                        <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z" /><circle cx="12" cy="10" r="2.4" /></svg>
-                        {ed.pin ? d.mapPinned : d.mapOpen}
-                      </button>
-                    </div>
+                    <input id="a-site" className="input" value={ed.site} maxLength={200} onChange={(e) => patch({ site: e.target.value })} placeholder={rd.sitePlaceholder} />
+                    <SiteMap
+                      query={ed.site}
+                      pin={ed.pin}
+                      locale={locale}
+                      labels={{ hint: d.mapHint, notFound: d.mapNotFound, searching: d.mapSearching, pinned: d.mapPinned, empty: d.mapEmpty }}
+                      onPin={(p) => setEdit((x) => (x ? { ...x, pin: p, site: x.site || `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` } : x))}
+                    />
                   </div>
                   <div data-empty={!ed.start}>
-                    <label htmlFor="a-start">{d.attrs.start}</label>
-                    <input id="a-start" className="input" type="date" min={todayIso()} value={ed.start} onChange={(e) => patch({ start: e.target.value })} />
+                    <label htmlFor="a-start">
+                      {d.attrs.start}
+                      {ed.assumed.includes('start') ? <span className="assumed">{d.assumed}</span> : null}
+                    </label>
+                    <input id="a-start" className="input" type="date" min={todayIso()} value={ed.start} onChange={(e) => setEdit((x) => (x ? { ...x, start: e.target.value, assumed: x.assumed.filter((a) => a !== 'start') } : x))} />
                   </div>
                   <div data-empty={basis !== 'lump_sum' && !dur}>
                     <label htmlFor="a-basis">{d.attrs.duration}</label>
@@ -468,6 +507,28 @@ export function JobPrompt({
               </div>
             ) : null}
 
+            {ed ? (
+              <div className="brief" role="status">
+                <b className="sub-h">{d.briefTitle}</b>
+                <p>{brief}</p>
+                {assumedNames.length ? <p className="brief-assumed">{d.briefAssumed} {list(assumedNames)}. {d.briefChange}</p> : null}
+                {missing.length ? (
+                  <p className="brief-missing">
+                    {d.briefMissing}{' '}
+                    {missing.map((m, i) => (
+                      <span key={m.id}>
+                        <button type="button" className="btn-link" onClick={() => document.getElementById(m.id)?.focus()}>{m.label}</button>
+                        {i < missing.length - 1 ? (locale === 'ar' ? '، ' : ', ') : ''}
+                      </span>
+                    ))}
+                    . {d.briefWhy}
+                  </p>
+                ) : (
+                  <p className="brief-ok">{d.briefComplete}</p>
+                )}
+              </div>
+            ) : null}
+
             <p className="small muted">{d.resultNote}</p>
             <div className="answer-actions">
               <Link className="btn btn-primary" href={continueHref}>{d.continue}</Link>
@@ -497,19 +558,6 @@ export function JobPrompt({
           </div>
         ) : null}
       </div>
-      {mapOpen && ed ? (
-        <SiteMap
-          query={ed.site}
-          initial={ed.pin}
-          locale={locale}
-          labels={{ title: d.mapTitle, hint: d.mapHint, notFound: d.mapNotFound, use: d.mapUse, close: d.mapClose, searching: d.mapSearching }}
-          onClose={() => setMapOpen(false)}
-          onUse={(p) => {
-            patch({ pin: p, site: ed.site || `${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}` })
-            setMapOpen(false)
-          }}
-        />
-      ) : null}
     </div>
   )
 }
