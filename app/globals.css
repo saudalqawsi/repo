@@ -86,8 +86,13 @@ html[lang='en'] .btn { text-transform: uppercase; letter-spacing: .03em; font-si
 
 /* ---------- Header: floating white box with a dark top bar ---------- */
 .hdr { position: absolute; top: 0; inset-inline: 0; z-index: 40; padding-top: clamp(12px, 2.4vw, 30px); }
-.hdr-box { display: grid; grid-template-columns: auto minmax(0, 1fr); background: rgba(255, 255, 255, .88); -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); border: 1px solid rgba(255, 255, 255, .6); border-radius: 14px; box-shadow: 0 1px 0 rgba(255, 255, 255, .5) inset, 0 20px 44px -26px rgba(0, 0, 0, .55); position: relative; }
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .hdr-box { background: rgba(255, 255, 255, .96); } }
+.hdr-box { --glass-w: rgba(255, 255, 255, .86); --glass-d: rgba(22, 27, 32, .74); display: grid; grid-template-columns: auto minmax(0, 1fr); background: transparent; -webkit-backdrop-filter: saturate(180%) blur(22px); backdrop-filter: saturate(180%) blur(22px); border: 1px solid rgba(255, 255, 255, .35); border-radius: 14px; box-shadow: 0 20px 44px -26px rgba(0, 0, 0, .55); position: relative; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) { .hdr-box { --glass-w: #fff; --glass-d: var(--dark); } }
+.hdr-brand, .navrow, .hdr-mobile { background: var(--glass-w); }
+.hdr-brand { border-start-start-radius: 13px; border-end-start-radius: 13px; }
+.topbar { border-start-end-radius: 13px; }
+.navrow { border-end-end-radius: 13px; }
+.hdr-mobile { border-start-end-radius: 13px; border-end-end-radius: 13px; }
 .hdr-brand { display: flex; align-items: center; gap: 12px; padding: 18px clamp(18px, 2.4vw, 40px); text-decoration: none; min-width: 0; }
 .brand, .hdr-brand { color: var(--ink); }
 .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
@@ -100,13 +105,14 @@ html[lang='en'] .brand-text b, html[lang='en'] .brand-text small { text-transfor
 html[lang='en'] .brand-text small { letter-spacing: .04em; }
 
 .hdr-main { display: flex; flex-direction: column; min-width: 0; }
-.topbar { background: transparent; color: var(--steel); border-bottom: 1px solid rgba(29, 35, 41, .08); display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; padding-inline: 24px; font-size: 13px; }
+.topbar { background: var(--glass-d); color: #c3cad0; display: flex; justify-content: space-between; align-items: center; gap: 16px; min-height: 40px; padding-inline: 24px; font-size: 13px; }
 html[lang='en'] .topbar { text-transform: uppercase; letter-spacing: .04em; font-size: 12px; }
 .topbar ul { list-style: none; margin: 0; padding: 0; display: flex; gap: 28px; }
 .topbar-end { display: flex; align-items: center; gap: 22px; }
-.topbar-end a { color: var(--ink); text-decoration: none; font-weight: 600; }
-.topbar-end a:hover { color: var(--sun-deep); }
-.topbar .lang { color: var(--ink); min-height: 32px; }
+.topbar-end a { color: #fff; text-decoration: none; }
+.topbar-end a:hover { color: var(--sun); }
+.topbar .lang { color: #fff; min-height: 32px; }
+.topbar .lang .lang-b { fill: #fff; }
 .navrow { display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 66px; padding-inline: 24px; }
 .nav { display: flex; gap: clamp(16px, 2.4vw, 32px); }
 .nav a { position: relative; text-decoration: none; color: var(--ink); font-weight: 700; font-size: 15px; padding: 8px 0; }
