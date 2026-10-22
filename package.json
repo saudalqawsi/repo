@@ -12,6 +12,7 @@
     "@fontsource/titillium-web": "^5.3.0",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.118.0",
+    "leaflet": "^1.9.4",
     "next": "^16.4.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
@@ -19,6 +20,7 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@types/leaflet": "^1.9.12",
     "@types/node": "^22.20.5",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",

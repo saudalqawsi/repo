@@ -42,11 +42,14 @@ function fromParams(sp: URLSearchParams | null): Draft {
     if ((DETAIL_KEYS as string[]).includes(k) && Number.isInteger(i) && i >= 0 && i < 4) details[k as DetailKey] = i
   }
   const start = sp?.get('start') ?? ''
+  const lat = parseFloat(sp?.get('lat') ?? '')
+  const lng = parseFloat(sp?.get('lng') ?? '')
+  const pinned = Number.isFinite(lat) && Number.isFinite(lng) && Math.abs(lat) <= 90 && Math.abs(lng) <= 180
   return {
     items,
     site: (sp?.get('site') ?? '').slice(0, 200),
-    lat: null,
-    lng: null,
+    lat: pinned ? +lat.toFixed(6) : null,
+    lng: pinned ? +lng.toFixed(6) : null,
     start: /^\d{4}-\d{2}-\d{2}$/.test(start) && start >= today() ? start : '',
     basis,
     duration: Number.isFinite(dur) ? Math.min(365, Math.max(1, dur)) : 1,
@@ -82,7 +85,7 @@ export function RequestWizard({
   const [step, setStep] = useState(() => (Object.keys(fromParams(sp).items).length ? 1 : 0))
   const [err, setErr] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
-  const [geo, setGeo] = useState<'idle' | 'busy' | 'ok' | 'fail'>('idle')
+  const [geo, setGeo] = useState<'idle' | 'busy' | 'ok' | 'fail'>(() => (fromParams(sp).lat ? 'ok' : 'idle'))
   const [done, setDone] = useState<string | null>(null)
 
   // restore draft after sign-in
