@@ -11,7 +11,7 @@ export const PHOTOS = {
   flow: { id: 'photo-1623428454599-0b106ed85f67', pos: 'center 55%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-tractor-in-a-field-aZB25TEATEc' },
   about: { id: 'photo-1726087163038-2910e4de29e5', pos: 'center 50%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-construction-site-in-the-desert-mzF_aDw9l9Y' },
   riyadh: { id: 'photo-1506795213373-430e921fe2ed', pos: 'center 40%', credit: 'https://unsplash.com/photos/kingdom-centre-skyscraper-in-riyadh-f5ZB0LHwi0s' },
-  ntp: { id: 'photo-1651428016256-70b39e3483da', pos: 'center 40%', credit: 'https://unsplash.com/photos/a-tall-building-with-glass-walls-tLaxEBMA7qM' },
+  ntp: { id: 'photo-1669101564304-1da32c23f8ec', pos: 'center 35%', credit: 'https://unsplash.com/photos/a-tall-building-with-a-pointy-top-YS23gFKcxRk' },
   economy: { id: 'photo-1674386491555-5b92161e4d04', pos: 'center 50%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-city-with-tall-buildings-MAPTe538-vA' },
   logistics: { id: 'photo-1758608307012-a43924fa0f90', pos: 'center 50%', credit: 'https://unsplash.com/photos/aerial-view-of-a-busy-highway-interchange-at-dusk-zzM7voOp6Tk' },
   housing: { id: 'photo-1726087162826-e6f42613a89e', pos: 'center 50%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-construction-site-sNPc-K_GfSE' },
