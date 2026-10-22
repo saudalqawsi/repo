@@ -7,7 +7,7 @@ import { DETAIL_ENUMS, type Attrs } from '@/lib/attrs'
 import { SampleContract } from './SampleContract'
 
 type Suggestion = { slug: string; qty: number; why?: string }
-type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; attrs?: Partial<Attrs> }
+type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; note?: string | null; attrs?: Partial<Attrs> }
 type DetailKey = keyof typeof DETAIL_ENUMS
 
 const MAX = 1000
@@ -55,6 +55,8 @@ export function JobPrompt({
   const cardRef = useRef<HTMLDivElement>(null)
   const recRef = useRef<SpeechRec | null>(null)
   const textRef = useRef('')
+  const askOnEnd = useRef(true)
+  const endTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   textRef.current = text
 
   useEffect(() => {
@@ -65,6 +67,33 @@ export function JobPrompt({
 
   const bySlug = new Map(equipment.map((e) => [e.slug, e]))
   const num = (n: number) => new Intl.NumberFormat(locale === 'ar' ? 'ar-SA' : 'en-US').format(n)
+
+  /** Suggest button / Enter: if a voice note is running, stop it and suggest from what was said. */
+  function submit(override?: string) {
+    if (recRef.current) {
+      if (override) {
+        textRef.current = override
+        setText(override)
+      }
+      askOnEnd.current = true
+      const rec = recRef.current
+      rec.stop()
+      // some phones are slow to report the end of recording: finish it ourselves
+      endTimer.current = setTimeout(() => finishRecording(rec), 1500)
+      return
+    }
+    void ask(override ?? textRef.current)
+  }
+
+  function finishRecording(rec: SpeechRec) {
+    if (endTimer.current) clearTimeout(endTimer.current)
+    endTimer.current = null
+    if (recRef.current !== rec) return // already finished
+    recRef.current = null
+    setListening(false)
+    if (askOnEnd.current && textRef.current.trim().length >= 3) void ask(textRef.current)
+    askOnEnd.current = true
+  }
 
   async function ask(q: string) {
     const value = q.trim().slice(0, MAX)
@@ -92,6 +121,7 @@ export function JobPrompt({
 
   function toggleVoice() {
     if (listening) {
+      askOnEnd.current = false
       recRef.current?.stop()
       return
     }
@@ -108,16 +138,14 @@ export function JobPrompt({
     rec.onresult = (e) => {
       let said = ''
       for (let i = 0; i < e.results.length; i++) said += e.results[i][0].transcript
-      setText((base + said).slice(0, MAX))
+      const next = (base + said).slice(0, MAX)
+      textRef.current = next
+      setText(next)
     }
     rec.onerror = (e) => {
       if (e.error === 'not-allowed' || e.error === 'service-not-allowed') setVoiceMsg(d.voiceDenied)
     }
-    rec.onend = () => {
-      setListening(false)
-      recRef.current = null
-      if (textRef.current.trim().length >= 3) ask(textRef.current)
-    }
+    rec.onend = () => finishRecording(rec)
     recRef.current = rec
     setVoiceMsg(null)
     setListening(true)
@@ -204,7 +232,7 @@ export function JobPrompt({
         className="prompt"
         onSubmit={(e) => {
           e.preventDefault()
-          ask(text)
+          submit()
         }}
       >
         <label htmlFor="job" className="vh">{d.title}</label>
@@ -218,7 +246,7 @@ export function JobPrompt({
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault()
-              ask(text)
+              submit()
             }
           }}
         />
@@ -237,8 +265,8 @@ export function JobPrompt({
             <span>{listening ? d.voiceStop : d.voice}</span>
           </button>
           <span className="count" aria-hidden="true">{num(text.length)}/{num(MAX)}</span>
-          <button className="btn btn-primary" type="submit" disabled={busy || text.trim().length < 3}>
-            {busy ? <><span className="spinner" aria-hidden="true" />{d.thinking}</> : d.suggest}
+          <button className="btn btn-primary" type="submit" disabled={busy || (!listening && text.trim().length < 3)}>
+            {busy ? <><span className="spinner" aria-hidden="true" />{d.thinking}</> : listening ? d.stopAndSuggest : d.suggest}
           </button>
         </div>
       </form>
@@ -255,7 +283,7 @@ export function JobPrompt({
             className="chip"
             onClick={() => {
               setText(j.q)
-              ask(j.q)
+              submit(j.q)
             }}
           >
             {j.label}
@@ -306,6 +334,8 @@ export function JobPrompt({
                 )
               })}
             </div>
+
+            {result.note ? <p className="plan-note">{result.note}</p> : null}
 
             <div>
               <b className="sub-h">{d.attrsTitle}</b>

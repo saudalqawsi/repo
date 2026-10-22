@@ -11,7 +11,7 @@ export function Footer({ locale }: { locale: Locale }) {
     <footer className="ftr">
       <div className="wrap ftr-in">
         <div className="ftr-brand">
-          <span className="brand"><Brand label={locale === 'ar' ? 'شيول' : 'Shayul'} /></span>
+          <span className="brand"><Brand label={locale === 'ar' ? 'شيول' : 'Shayul'} onDark /></span>
           <p>{d.footer.tagline}</p>
         </div>
         <div className="ftr-contact">

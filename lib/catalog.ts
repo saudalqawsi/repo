@@ -38,7 +38,7 @@ export function rateFor(e: Equipment, basis: Basis): number | null {
 const CUTOUTS = new Set([
   'bobcat-cutter', 'bobcat-sweeper', 'bobcat-trencher', 'crusher-excavator', 'excavator', 'grader-g14',
   'jcb-backhoe', 'jcb-forklift', 'loader-36', 'loader-50', 'loader-66', 'loader-80', 'loader-920',
-  'man-lift', 'scissor-lift', 'telehandler', 'vibratory-roller', 'walk-roller', 'dump-truck', 'bulldozer-d9',
+  'man-lift', 'scissor-lift', 'vibratory-roller', 'walk-roller', 'dump-truck', 'bulldozer-d9',
 ])
 export function cutout(e: Pick<Equipment, 'slug' | 'image'>): { src: string; cut: boolean } {
   return CUTOUTS.has(e.slug) ? { src: `/img/cut/${e.slug}.webp`, cut: true } : { src: e.image, cut: false }

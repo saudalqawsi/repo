@@ -5,8 +5,18 @@ import { getCatalog } from '@/lib/catalog.server'
 import { JobPrompt } from '@/components/JobPrompt'
 import { EquipmentGrid } from '@/components/EquipmentGrid'
 import { SecHead } from '@/components/SecHead'
-import { LoaderMark } from '@/components/Logo'
+import { Mark } from '@/components/Logo'
 import { FEATURE_ICONS } from '@/components/Icons'
+
+/** One of each kind, sized by real machine length so the scale reads true. */
+const FLEET = [
+  { slug: 'loader-66', len: 8.6, ar: 'شيول', en: 'Wheel loader' },
+  { slug: 'excavator', len: 6, ar: 'بوكلين', en: 'Excavator' },
+  { slug: 'grader-g14', len: 9, ar: 'قريدر', en: 'Grader' },
+  { slug: 'vibratory-roller', len: 5.8, ar: 'رصاصة', en: 'Roller' },
+  { slug: 'jcb-forklift', len: 4.9, ar: 'تليهاندلر', en: 'Telehandler' },
+  { slug: 'scissor-lift', len: 2.1, ar: 'سيزر لفت', en: 'Scissor lift' },
+]
 
 const RAIL = [
   { cat: 'loaders', img: 'loader-66' },
@@ -49,7 +59,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <div className="hero-ctas">
             <Link className="btn btn-tab" href={L('/request')}>
               <span>{d.nav.request}</span>
-              <i aria-hidden="true" />
+              <i aria-hidden="true"><Mark size={30} ink="var(--ink)" dots="var(--ink)" /></i>
             </Link>
             <a className="btn btn-outline-light" href="#start">{u.describe}</a>
           </div>
@@ -66,6 +76,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
             return (
               <Link key={r.cat} href={L(`/equipment?cat=${r.cat}`)} className={i === 0 ? 'on' : undefined} title={label} aria-label={label}>
                 <img src={`/img/cut/${r.img}.webp`} alt="" />
+                <span className="rail-label" aria-hidden="true">{label}</span>
               </Link>
             )
           })}
@@ -136,28 +147,34 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </div>
       </section>
 
-      {/* 6 · Aim + loader line-up */}
+      {/* 6 · Aim + the fleet at true scale */}
       <section className="sec aim" aria-labelledby="aim-h">
         <div className="wrap">
           <h2 id="aim-h" className="aim-h">
             <span>{u.aimA}</span>{' '}
-            <span className="aim-badge" aria-hidden="true"><LoaderMark size={40} color="var(--sun)" /></span>{' '}
+            <span className="aim-badge" aria-hidden="true"><Mark size={46} /></span>{' '}
             <span>{u.aimB}</span>
           </h2>
           <p className="aim-lead">{u.aimLead}</p>
-          <div className="lineup">
-            <ul className="facts">
-              {factsStart.map((f) => (
-                <li key={f.l}><b>{num(f.n)}</b><span>{f.l}</span></li>
-              ))}
-            </ul>
-            <img src="/img/cut/lineup.webp" alt={u.lineupAlt} />
-            <ul className="facts">
-              {factsEnd.map((f) => (
-                <li key={f.l}><b>{num(f.n)}</b><span>{f.l}</span></li>
-              ))}
-            </ul>
-          </div>
+          <ul className="fleet" aria-label={u.lineupAlt}>
+            {FLEET.map((f) => {
+              const e = equipment.find((x) => x.slug === f.slug)
+              if (!e) return null
+              return (
+                <li key={f.slug} style={{ flexGrow: f.len }}>
+                  <Link href={L(`/equipment?cat=${e.category}`)}>
+                    <span className="fleet-img"><img src={`/img/fleet/${f.slug}.webp`} alt="" loading="lazy" /></span>
+                    <b>{lang === 'ar' ? f.ar : f.en}</b>
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+          <ul className="facts-row">
+            {[...factsStart, ...factsEnd].map((f) => (
+              <li key={f.l}><b>{num(f.n)}</b><span>{f.l}</span></li>
+            ))}
+          </ul>
         </div>
       </section>
 

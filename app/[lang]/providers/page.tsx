@@ -25,7 +25,7 @@ export default async function ProvidersPage({ params }: { params: Promise<{ lang
       <section className="sec">
         <div className="wrap side">
           <div>
-            <img className="prov-img" src="/img/cut/telehandler.webp" alt="" />
+            <img className="prov-img" src="/img/cut/excavator.webp" alt="" />
             <div className="gcards gcards-1">
               {d.benefits.map((b) => (
                 <div className="gcard" key={b.t}>

@@ -25,7 +25,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
   return {
     title: { default: d.meta.title, template: `%s · ${lang === 'ar' ? 'شيول' : 'Shayul'}` },
     description: d.meta.description,
-    icons: { icon: '/icon.svg' },
+    icons: { icon: '/icon.svg', apple: '/apple-touch-icon.png' },
     alternates: { languages: { ar: '/ar', en: '/en' } },
   }
 }

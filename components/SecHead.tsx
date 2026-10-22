@@ -1,4 +1,4 @@
-import { LoaderMark } from './Logo'
+import { Mark } from './Logo'
 
 /** Centred section heading: light eyebrow, bold title, dotted rule with the loader mark. */
 export function SecHead({ id, eyebrow, title, lead, dark }: { id?: string; eyebrow: string; title: string; lead?: string; dark?: boolean }) {
@@ -16,7 +16,7 @@ export function Divider() {
   return (
     <span className="divider" aria-hidden="true">
       <i />
-      <LoaderMark size={30} color="var(--sun)" />
+      <Mark size={30} ink="#c4cace" />
       <i />
     </span>
   )
