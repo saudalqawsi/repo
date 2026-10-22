@@ -846,3 +846,38 @@ html[data-qbar] #intro, html[data-qbar] #vision, html[data-qbar] #fix, html[data
 .brief-tips b { font-size: 14px; color: var(--ink); }
 .brief-tips ul { margin: 0; padding-inline-start: 18px; display: grid; gap: 6px; font-size: 14px; line-height: 1.7; color: var(--text); }
 .brief-tips li::marker { color: var(--sun-deep); }
+
+/* Vision and mission icons */
+.ab-vm-icon { width: 64px; height: 64px; display: grid; place-items: center; background: var(--ink); color: var(--sun); border-radius: 14px; }
+
+/* Near-term objectives: photo header with the programme name, then the target as a figure */
+.ab-programs { gap: 24px; }
+.ab-programs li.ab-prog { padding: 0; gap: 0; border: 0; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 1px 0 var(--line), 0 24px 48px -32px rgba(16, 20, 24, .45); transition: transform .3s ease, box-shadow .3s ease; }
+.ab-programs li.ab-prog:hover { transform: translateY(-4px); box-shadow: 0 1px 0 var(--line), 0 34px 60px -32px rgba(16, 20, 24, .55); }
+.ab-prog .ab-prog-img { position: relative; margin: 0; aspect-ratio: 16 / 8; }
+.ab-prog .ab-prog-img::after { content: ''; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(16, 20, 24, 0) 30%, rgba(16, 20, 24, .85)); }
+.ab-prog .ab-prog-img h3 { position: absolute; z-index: 1; inset-inline: 20px; bottom: 16px; color: #fff; font-size: clamp(18px, 1.8vw, 21px); text-wrap: balance; }
+.ab-prog-body { padding: 20px 22px 18px; display: grid; gap: 16px; }
+.ab-prog-label { display: block; font-size: 12px; font-weight: 700; color: var(--steel); margin-bottom: 4px; }
+html[lang='en'] .ab-prog-label { text-transform: uppercase; letter-spacing: .1em; font-size: 11px; }
+.ab-prog-stat { padding-bottom: 16px; border-bottom: 1px solid var(--line); }
+.ab-prog-fig { display: flex; align-items: center; gap: 12px; font-variant-numeric: tabular-nums; }
+.ab-from { font-size: 24px; font-weight: 600; color: #a3abb0; }
+.ab-arrow { color: var(--sun); flex: none; }
+[dir='rtl'] .ab-arrow { transform: scaleX(-1); }
+.ab-to { font-size: clamp(38px, 4vw, 48px); line-height: 1; color: var(--ink); }
+.ab-cap { margin-top: 8px; font-size: 14.5px; font-weight: 600; color: var(--text); line-height: 1.6; }
+.ab-prog-help p { color: var(--text); line-height: 1.75; }
+.ab-programs .ab-target { display: none; }
+
+/* Saudi map in the market band */
+.ab-market-top { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 24px; margin-bottom: clamp(28px, 4vw, 48px); }
+.ab-market-top .ab-head { margin-bottom: 0; }
+.ksa-map { width: clamp(150px, 20vw, 250px); height: auto; display: block; }
+.ksa-land { fill: rgba(245, 180, 0, .16); stroke: var(--sun); stroke-width: 2.2; stroke-linejoin: round; }
+.ksa-city circle { fill: var(--sun); }
+.ksa-city .ksa-ping { fill: none; stroke: var(--sun); stroke-width: 2; }
+.ksa-city text { fill: #fff; font-size: 17px; font-weight: 700; }
+@keyframes ksa-ping { from { transform: scale(.5); opacity: 1; } to { transform: scale(2.4); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .ksa-city .ksa-ping { display: none; } }
+@media (max-width: 560px) { .ab-market-top { grid-template-columns: 1fr; } .ksa-map { width: 160px; } }

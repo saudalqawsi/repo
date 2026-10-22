@@ -128,3 +128,26 @@ export function IconContract() {
   )
 }
 export const ABOUT_ICONS = [IconContract, IconHeld, IconShield, IconHandover]
+
+/** Vision: an eye looking out to the horizon. */
+export function IconVision({ size = 40 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 48 48" width={size} height={size} aria-hidden="true" {...P}>
+      <path d="M4 24s7.5-12 20-12 20 12 20 12-7.5 12-20 12S4 24 4 24z" />
+      <circle cx="24" cy="24" r="6.5" />
+      <circle cx="24" cy="24" r="2" fill="currentColor" />
+      <path d="M8 42h32" />
+    </svg>
+  )
+}
+/** Mission: a target with an arrow on it. */
+export function IconMission({ size = 40 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 48 48" width={size} height={size} aria-hidden="true" {...P}>
+      <circle cx="22" cy="26" r="17" />
+      <circle cx="22" cy="26" r="10" />
+      <circle cx="22" cy="26" r="3" fill="currentColor" />
+      <path d="M22 26L40 8M34 8h6v6" />
+    </svg>
+  )
+}

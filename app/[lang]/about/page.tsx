@@ -5,7 +5,8 @@ import { isLocale, t } from '@/lib/i18n'
 import { PageBanner } from '@/components/PageBanner'
 import { AboutNav } from '@/components/AboutNav'
 import { Mark } from '@/components/Logo'
-import { ABOUT_ICONS, IconRenter } from '@/components/Icons'
+import { ABOUT_ICONS, IconMission, IconRenter, IconVision } from '@/components/Icons'
+import { KsaMap } from '@/components/KsaMap'
 import { photoProps } from '@/lib/photos'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
@@ -54,12 +55,12 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
         <div className="wrap ab-vm-in">
           <h2 id="vision-h" className="sr-only">{d.nav[1]}</h2>
           <article className="ab-vm-card reveal">
-            <span className="ab-vm-mark"><Mark size={40} /></span>
+            <span className="ab-vm-icon"><IconVision size={44} /></span>
             <h3>{d.visionTitle}</h3>
             <p>{d.vision}</p>
           </article>
           <article className="ab-vm-card reveal">
-            <span className="ab-vm-mark"><Mark size={40} /></span>
+            <span className="ab-vm-icon"><IconMission size={44} /></span>
             <h3>{d.missionTitle}</h3>
             <p>{d.mission}</p>
           </article>
@@ -115,12 +116,31 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
           </div>
           <ul className="ab-programs">
             {d.programs.map((p, i) => (
-              <li key={p.name} className="reveal">
-                <div className="ab-prog-img"><img alt="" loading="lazy" {...photoProps(PROGRAM_PHOTOS[i], '(max-width: 900px) 100vw, 600px')} /></div>
-                <h3>{p.name}</h3>
-                <p className="ab-target"><span>{d.targetLabel}</span>{p.target}</p>
-                <p>{p.d}</p>
-                <a className="ab-src" href={p.url} target="_blank" rel="noopener noreferrer">{d.readMore} ↗</a>
+              <li key={p.name} className="ab-prog reveal">
+                <div className="ab-prog-img">
+                  <img alt="" loading="lazy" {...photoProps(PROGRAM_PHOTOS[i], '(max-width: 900px) 100vw, 600px')} />
+                  <h3>{p.name}</h3>
+                </div>
+                <div className="ab-prog-body">
+                  <div className="ab-prog-stat">
+                    <span className="ab-prog-label">{d.targetLabel}</span>
+                    <div className="ab-prog-fig">
+                      {p.from ? (
+                        <>
+                          <span className="ab-from">{p.from}</span>
+                          <svg className="ab-arrow" viewBox="0 0 32 12" width="32" height="12" aria-hidden="true"><path d="M1 6h28M23 1l6 5-6 5" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>
+                        </>
+                      ) : null}
+                      <b className="ab-to">{p.to}</b>
+                    </div>
+                    <p className="ab-cap">{p.cap}</p>
+                  </div>
+                  <div className="ab-prog-help">
+                    <span className="ab-prog-label">{d.helpLabel}</span>
+                    <p>{p.d}</p>
+                  </div>
+                  <a className="ab-src" href={p.url} target="_blank" rel="noopener noreferrer">{d.readMore} ↗</a>
+                </div>
               </li>
             ))}
           </ul>
@@ -129,10 +149,13 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
 
       {/* 5 · The Saudi market */}
       <section id="market" className="ab-market" aria-labelledby="m-h">
-        <div className="wrap">
-          <div className="ab-head ab-head-dark reveal">
-            <p className="ab-eyebrow">{d.marketEyebrow}</p>
-            <h2 id="m-h">{d.marketTitle}</h2>
+        <div className="wrap ab-market-in">
+          <div className="ab-market-top">
+            <div className="ab-head ab-head-dark reveal">
+              <p className="ab-eyebrow">{d.marketEyebrow}</p>
+              <h2 id="m-h">{d.marketTitle}</h2>
+            </div>
+            <KsaMap label={d.mapLabel} city={d.riyadh} />
           </div>
           <ul className="ab-stats">
             {d.market.map((m) => (
