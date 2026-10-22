@@ -314,7 +314,7 @@ const ar = {
     aimA: 'هدفنا',
     aimB: 'موقعك يعمل في موعده',
     aimLead: 'نختصر عليك البحث والاتصالات: طلب واحد، مؤجر موثّق، ومعدة تصل بمشغّلها في الوقت المتفق عليه.',
-    lineupAlt: 'أنواع المعدات المتوفرة بمقاس حقيقي',
+    lineupAlt: 'قريدر ورصاصة وباك لودر وشيولات وبوكلين وتليهاندلر مصفوفة معًا',
     facts: {
       types: 'نوع معدة',
       cats: 'فئات',
@@ -652,7 +652,7 @@ const en: Dict = {
     aimA: 'Our aim',
     aimB: 'is your site running on time',
     aimLead: 'No more calling around: one request, a verified owner, and a machine that arrives with its operator when agreed.',
-    lineupAlt: 'The kinds of machines available, at true scale',
+    lineupAlt: 'A grader, roller, backhoe, wheel loaders, excavator and telehandler lined up together',
     facts: {
       types: 'Machine types',
       cats: 'Categories',

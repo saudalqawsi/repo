@@ -90,7 +90,7 @@ html[lang='en'] .btn { text-transform: uppercase; letter-spacing: .03em; font-si
 .hdr-brand { display: flex; align-items: center; gap: 12px; padding: 18px clamp(18px, 2.4vw, 40px); text-decoration: none; min-width: 0; }
 .brand, .hdr-brand { color: var(--ink); }
 .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
-.brand-mark { flex: none; display: grid; place-items: center; }
+.brand-mark { flex: none; display: grid; place-items: center; line-height: 0; }
 .brand-mark .mark { display: block; }
 .brand-text { display: flex; flex-direction: column; line-height: 1.1; }
 .brand-text b { font-size: 22px; font-weight: 700; color: var(--ink); }
@@ -133,7 +133,7 @@ html[lang='en'] .nav a { text-transform: uppercase; font-size: 14px; letter-spac
   .mnav .mnav-lang a { border: 0; }
   .mnav .btn { margin-top: 12px; border-bottom: 0; }
 }
-@media (max-width: 420px) { .brand-text small { display: none; } .brand-mark { width: 40px; height: 40px; } }
+@media (max-width: 420px) { .brand-text small { display: none; } .brand-mark .mark { width: 46px; height: auto; } }
 
 /* ---------- Hero ---------- */
 .hero { position: relative; min-height: clamp(640px, 92vh, 860px); display: flex; align-items: center; background: var(--dark); color: #fff; overflow: hidden; }
@@ -566,3 +566,7 @@ html[lang='en'] .fleet b { text-transform: uppercase; letter-spacing: .04em; fon
   .facts-row { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 26px; }
   .facts-row li:nth-child(4) { border-inline-start: 0; }
 }
+
+.lineup-wide { margin-top: clamp(28px, 4vw, 48px); }
+.lineup-wide img { width: 100%; height: auto; }
+@media (max-width: 700px) { .lineup-wide { margin-inline: calc(-1 * var(--gutter)); overflow: hidden; } .lineup-wide img { width: 150%; max-width: none; margin-inline-start: -25%; } }

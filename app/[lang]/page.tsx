@@ -8,16 +8,6 @@ import { SecHead } from '@/components/SecHead'
 import { Mark } from '@/components/Logo'
 import { FEATURE_ICONS } from '@/components/Icons'
 
-/** One of each kind, sized by real machine length so the scale reads true. */
-const FLEET = [
-  { slug: 'loader-66', len: 8.6, ar: 'شيول', en: 'Wheel loader' },
-  { slug: 'excavator', len: 6, ar: 'بوكلين', en: 'Excavator' },
-  { slug: 'grader-g14', len: 9, ar: 'قريدر', en: 'Grader' },
-  { slug: 'vibratory-roller', len: 5.8, ar: 'رصاصة', en: 'Roller' },
-  { slug: 'jcb-forklift', len: 4.9, ar: 'تليهاندلر', en: 'Telehandler' },
-  { slug: 'scissor-lift', len: 2.1, ar: 'سيزر لفت', en: 'Scissor lift' },
-]
-
 const RAIL = [
   { cat: 'loaders', img: 'loader-66' },
   { cat: 'excavators', img: 'excavator' },
@@ -59,7 +49,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <div className="hero-ctas">
             <Link className="btn btn-tab" href={L('/request')}>
               <span>{d.nav.request}</span>
-              <i aria-hidden="true"><Mark size={30} ink="var(--ink)" dots="var(--ink)" /></i>
+              <i aria-hidden="true"><Mark size={34} color="var(--ink)" /></i>
             </Link>
             <a className="btn btn-outline-light" href="#start">{u.describe}</a>
           </div>
@@ -152,24 +142,13 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         <div className="wrap">
           <h2 id="aim-h" className="aim-h">
             <span>{u.aimA}</span>{' '}
-            <span className="aim-badge" aria-hidden="true"><Mark size={46} /></span>{' '}
+            <span className="aim-badge" aria-hidden="true"><Mark size={50} /></span>{' '}
             <span>{u.aimB}</span>
           </h2>
           <p className="aim-lead">{u.aimLead}</p>
-          <ul className="fleet" aria-label={u.lineupAlt}>
-            {FLEET.map((f) => {
-              const e = equipment.find((x) => x.slug === f.slug)
-              if (!e) return null
-              return (
-                <li key={f.slug} style={{ flexGrow: f.len }}>
-                  <Link href={L(`/equipment?cat=${e.category}`)}>
-                    <span className="fleet-img"><img src={`/img/fleet/${f.slug}.webp`} alt="" loading="lazy" /></span>
-                    <b>{lang === 'ar' ? f.ar : f.en}</b>
-                  </Link>
-                </li>
-              )
-            })}
-          </ul>
+          <div className="lineup-wide">
+            <img src="/img/fleet/lineup.webp" alt={u.lineupAlt} width={2400} height={465} loading="lazy" />
+          </div>
           <ul className="facts-row">
             {[...factsStart, ...factsEnd].map((f) => (
               <li key={f.l}><b>{num(f.n)}</b><span>{f.l}</span></li>

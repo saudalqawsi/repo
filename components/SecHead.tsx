@@ -16,7 +16,7 @@ export function Divider() {
   return (
     <span className="divider" aria-hidden="true">
       <i />
-      <Mark size={30} ink="#c4cace" />
+      <Mark size={30} />
       <i />
     </span>
   )
