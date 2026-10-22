@@ -16,6 +16,7 @@ export async function generateMetadata({ params }: { params: Promise<{ lang: str
 }
 
 const IDS = ['intro', 'vision', 'fix', 'v2030', 'market'] as const
+const PROGRAM_PHOTOS = ['ntp', 'economy', 'logistics', 'housing'] as const
 
 export default async function AboutPage({ params }: { params: Promise<{ lang: string }> }) {
   const { lang } = await params
@@ -113,12 +114,13 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
             <p className="ab-lead">{d.v2030Lead}</p>
           </div>
           <ul className="ab-programs">
-            {d.programs.map((p) => (
+            {d.programs.map((p, i) => (
               <li key={p.name} className="reveal">
+                <div className="ab-prog-img"><img alt="" loading="lazy" {...photoProps(PROGRAM_PHOTOS[i], '(max-width: 900px) 100vw, 600px')} /></div>
                 <h3>{p.name}</h3>
                 <p className="ab-target"><span>{d.targetLabel}</span>{p.target}</p>
                 <p>{p.d}</p>
-                <a href={p.url} target="_blank" rel="noopener noreferrer">{d.readMore}</a>
+                <a className="ab-src" href={p.url} target="_blank" rel="noopener noreferrer">{d.readMore} ↗</a>
               </li>
             ))}
           </ul>

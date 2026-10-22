@@ -41,9 +41,10 @@ export function Footer({ locale }: { locale: Locale }) {
       <div className="ftr-bar">
         <div className="wrap ftr-bar-in">
           <span>© 2026 · {d.footer.entity}</span>
-          {COMPANY.unn || COMPANY.vat ? (
+          {COMPANY.unn || COMPANY.vat || COMPANY.zatcaCert ? (
             <span className="ftr-reg">
               {COMPANY.unn ? <span>{d.footer.unn} <bdi dir="ltr">{COMPANY.unn}</bdi></span> : null}
+              {COMPANY.zatcaCert ? <span>{d.footer.zatca} <bdi dir="ltr">{COMPANY.zatcaCert}</bdi></span> : null}
               {COMPANY.vat ? <span>{d.footer.vat} <bdi dir="ltr">{COMPANY.vat}</bdi></span> : null}
             </span>
           ) : null}

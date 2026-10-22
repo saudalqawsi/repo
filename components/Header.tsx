@@ -6,6 +6,8 @@ import { Brand } from './Logo'
 import { LangSwitch } from './LangSwitch'
 import { NavLinks } from './NavLinks'
 import { MobileMenu } from './MobileMenu'
+import { QuickBar } from './QuickBar'
+import { Mark } from './Logo'
 
 export async function Header({ locale }: { locale: Locale }) {
   const d = t(locale)
@@ -59,6 +61,31 @@ export async function Header({ locale }: { locale: Locale }) {
           </div>
         </div>
       </div>
+      <QuickBar label={d.nav.menu}>
+        <Link href={L('')} className="qbar-brand" aria-label={locale === 'ar' ? 'شيول، الرئيسية' : 'Shayul home'}>
+          <Mark size={40} />
+          <b>{locale === 'ar' ? 'شيول' : 'Shayul'}</b>
+        </Link>
+        <NavLinks links={links.slice(0, 2)} className="qbar-links" />
+        <div className="qbar-end">
+          <Link className="qbar-acc" href={account.href}>{account.label}</Link>
+          <Suspense fallback={null}>
+            <LangSwitch locale={locale} label={d.nav.switchTo} />
+          </Suspense>
+          <Link className="btn btn-primary btn-sm" href={L('/request')}>{d.nav.request}</Link>
+          <div className="qbar-menu">
+            <Suspense fallback={null}>
+              <MobileMenu label={d.nav.menu}>
+                {links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
+                <Link href={account.href}>{account.label}</Link>
+                <div className="mnav-meta">
+                  <LangSwitch locale={locale} label={d.nav.switchTo} />
+                </div>
+              </MobileMenu>
+            </Suspense>
+          </div>
+        </div>
+      </QuickBar>
     </header>
   )
 }
