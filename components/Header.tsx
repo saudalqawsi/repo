@@ -2,11 +2,9 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
 import { t, type Locale } from '@/lib/i18n'
-import { PHONE } from '@/lib/contact'
 import { Brand } from './Logo'
 import { LangSwitch } from './LangSwitch'
 import { NavLinks } from './NavLinks'
-import { IconPhone } from './Contact'
 import { MobileMenu } from './MobileMenu'
 
 export async function Header({ locale }: { locale: Locale }) {
@@ -20,13 +18,7 @@ export async function Header({ locale }: { locale: Locale }) {
     { href: L('/how-it-works'), label: d.nav.how },
     { href: L('/providers'), label: d.nav.providers },
   ]
-  const account = signedIn ? { href: L('/account'), label: d.nav.myRequests } : { href: L('/login'), label: d.nav.signIn }
-  const phone = (
-    <a className="tel-link" href={PHONE.tel} aria-label={`${d.contact.callLabel} ${PHONE.intl}`}>
-      <IconPhone size={16} />
-      <bdi dir="ltr">{PHONE.display}</bdi>
-    </a>
-  )
+  const account = signedIn ? { href: L('/account'), label: d.nav.dashboard } : { href: L('/login'), label: d.nav.signIn }
 
   return (
     <header className="hdr">
@@ -41,7 +33,6 @@ export async function Header({ locale }: { locale: Locale }) {
                 {d.ui.topbar.map((x) => <li key={x}>{x}</li>)}
               </ul>
               <div className="topbar-end">
-                {phone}
                 <Link href={account.href}>{account.label}</Link>
                 <Suspense fallback={null}>
                   <LangSwitch locale={locale} label={d.nav.switchTo} />
@@ -54,16 +45,12 @@ export async function Header({ locale }: { locale: Locale }) {
             </div>
           </div>
           <div className="hdr-mobile">
-            <a className="icon-btn" href={PHONE.tel} aria-label={`${d.contact.callLabel} ${PHONE.intl}`}>
-              <IconPhone size={20} />
-            </a>
             <Suspense fallback={null}>
               <MobileMenu label={d.nav.menu}>
                 {links.map((l) => <Link key={l.href} href={l.href}>{l.label}</Link>)}
                 <Link href={account.href}>{account.label}</Link>
                 <div className="mnav-meta">
-                  {phone}
-                  <LangSwitch locale={locale} label={d.nav.switchTo} />
+                    <LangSwitch locale={locale} label={d.nav.switchTo} />
                 </div>
                 <Link className="btn btn-primary btn-block" href={L('/request')}>{d.nav.request}</Link>
               </MobileMenu>
