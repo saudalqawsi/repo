@@ -43,6 +43,7 @@ export function SiteMap({
         maxZoom: 19,
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>',
       }).addTo(map)
+      setTimeout(() => map?.invalidateSize(), 150)
       const icon = L.divIcon({ className: 'map-pin', html: '<span></span>', iconSize: [28, 38], iconAnchor: [14, 36] })
       let marker: import('leaflet').Marker | null = initial ? L.marker([initial.lat, initial.lng], { icon }).addTo(map) : null
       map.on('click', (e: import('leaflet').LeafletMouseEvent) => {
@@ -66,14 +67,16 @@ export function SiteMap({
             countrycodes: 'sa',
             viewbox: VIEWBOX,
             bounded: '1',
-            limit: '1',
+            limit: '8',
             'accept-language': locale,
-            q: q.replace(/^حي\s+/, ''),
+            q: q.replace(/^(حي|district of|district)\s+/i, '').replace(/\s*(district|neighbourhood|neighborhood)$/i, ''),
           })
         const res = await fetch(url, { headers: { Accept: 'application/json' } })
-        const hits = (await res.json()) as { lat: string; lon: string; boundingbox: string[]; geojson?: GeoJSON.Geometry }[]
+        const hits = (await res.json()) as { lat: string; lon: string; category: string; addresstype: string; geojson?: GeoJSON.Geometry }[]
         if (cancelled || !map) return
-        const hit = hits[0]
+        // prefer the district boundary over streets or shops that share its name
+        const AREA = ['neighbourhood', 'suburb', 'quarter', 'city_district', 'district', 'residential']
+        const hit = hits.find((h) => AREA.includes(h.addresstype) && (h.category === 'boundary' || h.category === 'place')) ?? hits.find((h) => h.category === 'boundary' || h.category === 'place') ?? hits[0]
         if (!hit) {
           setStatus('notfound')
           return
@@ -83,8 +86,10 @@ export function SiteMap({
             style: { color: '#dc9f00', weight: 3, fillColor: '#f5b400', fillOpacity: 0.16 },
             interactive: false,
           }).addTo(map)
+          map.invalidateSize()
           if (!initial) map.fitBounds(area.getBounds(), { padding: [24, 24] })
         } else if (!initial) {
+          map.invalidateSize()
           map.setView([+hit.lat, +hit.lon], 15)
         }
         setStatus('found')
