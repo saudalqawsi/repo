@@ -81,8 +81,20 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </div>
       </section>
 
-      {/* 3 · Why Shayul */}
-      <section className="sec sec-grey" aria-labelledby="why-h">
+      {/* 3 · Fleet */}
+      <section className="sec sec-grey" aria-labelledby="fleet-h">
+        <div className="wrap">
+          <SecHead id="fleet-h" eyebrow={u.fleetEyebrow} title={u.fleetTitle} />
+          <EquipmentGrid locale={lang} d={d.eq} equipment={equipment} categories={categories} limit={8} />
+          <div className="center-row">
+            <p className="note">{d.eq.indicativeNote}</p>
+            <Link className="btn btn-dark" href={L('/equipment')}>{d.home.eqAll}</Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 4 · Why Shayul */}
+      <section className="sec" aria-labelledby="why-h">
         <div className="wrap">
           <SecHead id="why-h" eyebrow={u.whyEyebrow} title={u.whyTitle} lead={u.whyLead} />
           <div className="why">
@@ -107,8 +119,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </div>
       </section>
 
-      {/* 4 · Steps */}
-      <section className="sec" aria-labelledby="how-h">
+      {/* 5 · Steps */}
+      <section className="sec sec-grey" aria-labelledby="how-h">
         <div className="wrap">
           <SecHead id="how-h" eyebrow={u.howEyebrow} title={u.howTitle} />
           <ol className="seq">
@@ -125,8 +137,8 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </div>
       </section>
 
-      {/* 5 · Our goal */}
-      <section className="sec sec-grey aim" aria-labelledby="aim-h">
+      {/* 6 · Our goal */}
+      <section className="sec aim" aria-labelledby="aim-h">
         <div className="wrap">
           <h2 id="aim-h" className="aim-h">
             <span>{u.aimA}</span>{' '}
@@ -145,7 +157,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
         </div>
       </section>
 
-      {/* 6 · Owners and renters */}
+      {/* 7 · Owners and renters */}
       <section className="split" aria-label={d.nav.request}>
         <div className="split-half split-dark">
           <span className="split-role"><Mark size={30} /> {d.ui.owners}</span>
@@ -160,18 +172,6 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
           <Link className="btn btn-dark" href={L('/request')}>{d.nav.request}</Link>
         </div>
       </section>
-      {/* 7 · Fleet, last before the footer */}
-      <section className="sec" aria-labelledby="fleet-h">
-        <div className="wrap">
-          <SecHead id="fleet-h" eyebrow={u.fleetEyebrow} title={u.fleetTitle} />
-          <EquipmentGrid locale={lang} d={d.eq} equipment={equipment} categories={categories} limit={8} />
-          <div className="center-row">
-            <p className="note">{d.eq.indicativeNote}</p>
-            <Link className="btn btn-dark" href={L('/equipment')}>{d.home.eqAll}</Link>
-          </div>
-        </div>
-      </section>
-
     </>
   )
 }
