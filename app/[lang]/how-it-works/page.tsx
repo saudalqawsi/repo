@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation'
 import { isLocale, t } from '@/lib/i18n'
 import { PageBanner } from '@/components/PageBanner'
 import { SecHead } from '@/components/SecHead'
+import { GUARANTEE_ICONS } from '@/components/Icons'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -37,12 +38,16 @@ export default async function HowPage({ params }: { params: Promise<{ lang: stri
         <div className="wrap">
           <SecHead id="g-h" eyebrow={all.ui.whyEyebrow} title={d.guaranteeTitle} />
           <div className="gcards">
-            {d.guarantees.map((g) => (
+            {d.guarantees.map((g, i) => {
+              const Icon = GUARANTEE_ICONS[i % GUARANTEE_ICONS.length]
+              return (
               <div className="gcard" key={g.t}>
+                <span className="g-icon"><Icon /></span>
                 <h3>{g.t}</h3>
                 <p>{g.d}</p>
               </div>
-            ))}
+              )
+            })}
           </div>
         </div>
       </section>

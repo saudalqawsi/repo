@@ -17,6 +17,7 @@ export async function Header({ locale }: { locale: Locale }) {
     { href: L('/equipment'), label: d.nav.equipment },
     { href: L('/how-it-works'), label: d.nav.how },
     { href: L('/providers'), label: d.nav.providers },
+    { href: L('/about'), label: d.nav.about },
   ]
   const account = signedIn ? { href: L('/account'), label: d.nav.dashboard } : { href: L('/login'), label: d.nav.signIn }
 

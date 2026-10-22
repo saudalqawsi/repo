@@ -12,7 +12,7 @@ export default function NotFound() {
         </div>
       </section>
       <div className="flow" style={{ textAlign: 'center' }}>
-        <p className="muted" style={{ margin: '12px 0 4px' }}>الرابط غير صحيح أو نُقلت الصفحة.</p>
+        <p className="muted" style={{ margin: '12px 0 4px' }}>الرابط غلط أو الصفحة انتقلت.</p>
         <p className="muted" lang="en" dir="ltr" style={{ margin: '0 0 24px' }}>The link is wrong or the page has moved.</p>
         <div className="center-row" style={{ flexDirection: 'row', flexWrap: 'wrap', justifyContent: 'center', gap: 12, marginTop: 0 }}>
           <Link className="btn btn-primary" href="/ar">الرئيسية</Link>

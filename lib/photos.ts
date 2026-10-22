@@ -9,18 +9,20 @@ export const PHOTOS = {
   how: { id: 'photo-1748848436533-f7583dce22b6', pos: 'center 45%', credit: 'https://unsplash.com/photos/an-excavator-works-in-a-sandy-terrain-FeO9AixmDt0' },
   owners: { id: 'photo-1517089152318-42ec560349c0', pos: 'center 40%', credit: 'https://unsplash.com/photos/aerial-photography-of-dump-trucks-EN1tF2EG-50' },
   flow: { id: 'photo-1623428454599-0b106ed85f67', pos: 'center 55%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-tractor-in-a-field-aZB25TEATEc' },
+  about: { id: 'photo-1726087163038-2910e4de29e5', pos: 'center 50%', credit: 'https://unsplash.com/photos/an-aerial-view-of-a-construction-site-in-the-desert-mzF_aDw9l9Y' },
+  riyadh: { id: 'photo-1506795213373-430e921fe2ed', pos: 'center 40%', credit: 'https://unsplash.com/photos/kingdom-centre-skyscraper-in-riyadh-f5ZB0LHwi0s' },
 } as const
 export type PhotoKey = keyof typeof PHOTOS
 
 const WIDTHS = [640, 960, 1280, 1920, 2560]
 const url = (id: string, w: number) => `https://images.unsplash.com/${id}?auto=format&fit=crop&w=${w}&q=72`
 
-export function photoProps(key: PhotoKey) {
+export function photoProps(key: PhotoKey, sizes = '100vw') {
   const p = PHOTOS[key]
   return {
     src: url(p.id, 1920),
     srcSet: WIDTHS.map((w) => `${url(p.id, w)} ${w}w`).join(', '),
-    sizes: '100vw',
+    sizes,
     style: { objectPosition: p.pos },
   }
 }

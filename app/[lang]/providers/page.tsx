@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { ProviderForm } from '@/components/ProviderForm'
 import { PageBanner } from '@/components/PageBanner'
 import { SecHead } from '@/components/SecHead'
+import { OWNER_ICONS } from '@/components/Icons'
 
 export async function generateMetadata({ params }: { params: Promise<{ lang: string }> }): Promise<Metadata> {
   const { lang } = await params
@@ -26,12 +27,16 @@ export default async function ProvidersPage({ params }: { params: Promise<{ lang
           <div>
             <img className="prov-img" src="/img/cut/excavator.webp" alt="" />
             <div className="gcards gcards-1">
-              {d.benefits.map((b) => (
+              {d.benefits.map((b, i) => {
+                const Icon = OWNER_ICONS[i % OWNER_ICONS.length]
+                return (
                 <div className="gcard" key={b.t}>
+                  <span className="g-icon"><Icon /></span>
                   <h3>{b.t}</h3>
                   <p className="muted">{b.d}</p>
                 </div>
-              ))}
+                )
+              })}
             </div>
             <h2 className="h-sm" id="needs">{d.needTitle}</h2>
             <ul className="list">
