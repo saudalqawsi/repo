@@ -187,6 +187,7 @@ export function RequestWizard({
       sessionStorage.removeItem(DRAFT_KEY)
     } catch {}
     setDone(data[0].ref)
+    window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
   }
 
   if (done) {
@@ -379,7 +380,7 @@ export function RequestWizard({
               )
             })}
             <div className="row"><span className="muted">{d.steps[1]}</span><span>{draft.site}</span></div>
-            <div className="row"><span className="muted">{d.start}</span><span>{draft.start}</span></div>
+            <div className="row"><span className="muted">{d.start}</span><span>{draft.start ? new Intl.DateTimeFormat(locale === 'ar' ? 'ar-SA-u-ca-gregory' : 'en-GB', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(draft.start + 'T12:00:00')) : '—'}</span></div>
             <div className="row"><span className="muted">{d.basis}</span><span>{d.basisOpts[draft.basis]}{draft.basis !== 'lump_sum' ? ` · ${durationPhrase(locale, draft.basis, draft.duration)}` : ''}</span></div>
             <div className="row"><span className="muted">{d.accuracy}</span><span>{num(accuracy)}%</span></div>
           </div>

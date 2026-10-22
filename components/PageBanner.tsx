@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import { t, type Locale } from '@/lib/i18n'
+import { photoProps, type PhotoKey } from '@/lib/photos'
 
 /** Dark photo banner that every inner page opens with; the header floats over it. */
-export function PageBanner({ locale, title, lead, image = '/img/hero.jpg', slim }: { locale: Locale; title: string; lead?: string; image?: string; slim?: boolean }) {
+export function PageBanner({ locale, title, lead, photo = 'flow', slim }: { locale: Locale; title: string; lead?: string; photo?: PhotoKey; slim?: boolean }) {
   const d = t(locale)
   return (
     <section className={`banner${slim ? ' banner-slim' : ''}`}>
-      <img className="banner-img" src={image} alt="" />
+      <img className="banner-img" alt="" {...photoProps(photo)} />
       <div className="wrap banner-in">
         <nav aria-label={d.ui.crumbs} className="crumbs">
           <Link href={`/${locale}`}>{d.ui.home}</Link>

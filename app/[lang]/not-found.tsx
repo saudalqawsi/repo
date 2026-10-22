@@ -1,10 +1,11 @@
 import Link from 'next/link'
+import { photoProps } from '@/lib/photos'
 
 export default function NotFound() {
   return (
     <>
       <section className="banner banner-slim">
-        <img className="banner-img" src="/img/hero.jpg" alt="" />
+        <img className="banner-img" alt="" {...photoProps('flow')} />
         <div className="wrap banner-in">
           <h1>الصفحة غير موجودة · Page not found</h1>
           <span className="dash" aria-hidden="true"><i /><i /></span>

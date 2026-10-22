@@ -24,7 +24,7 @@ export default async function EquipmentPage({
   const { equipment, categories } = await getCatalog()
   return (
     <>
-      <PageBanner locale={lang} title={d.eq.title} lead={d.eq.lead} image="/img/eq/loader-66.jpg" />
+      <PageBanner locale={lang} title={d.eq.title} lead={d.eq.lead} photo="equipment" />
       <section className="sec sec-grey">
         <div className="wrap">
           <EquipmentGrid

@@ -13,6 +13,7 @@ import { dirOf, isLocale, LOCALES, t } from '@/lib/i18n'
 import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
 import { WhatsAppFab } from '@/components/WhatsAppFab'
+import { ScrollReset } from '@/components/ScrollReset'
 
 export function generateStaticParams() {
   return LOCALES.map((lang) => ({ lang }))
@@ -42,6 +43,7 @@ export default async function RootLayout({ children, params }: { children: React
         <Header locale={lang} />
         <main id="main">{children}</main>
         <Footer locale={lang} />
+        <ScrollReset />
         <WhatsAppFab label={t(lang).contact.waLabel} text={t(lang).contact.waText} />
       </body>
     </html>

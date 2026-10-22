@@ -6,7 +6,8 @@ import { JobPrompt } from '@/components/JobPrompt'
 import { EquipmentGrid } from '@/components/EquipmentGrid'
 import { SecHead } from '@/components/SecHead'
 import { Mark } from '@/components/Logo'
-import { FEATURE_ICONS } from '@/components/Icons'
+import { photoProps } from '@/lib/photos'
+import { FEATURE_ICONS, IconRenter } from '@/components/Icons'
 
 const RAIL = [
   { cat: 'loaders', img: 'loader-66' },
@@ -40,7 +41,7 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
     <>
       {/* 1 · Hero */}
       <section className="hero">
-        <img className="hero-img" src="/img/hero.jpg" alt={u.heroAlt} />
+        <img className="hero-img" alt={u.heroAlt} fetchPriority="high" {...photoProps('hero')} />
         <div className="wrap hero-in">
           <p className="hero-light">{u.heroLight}</p>
           <h1 className="hero-bold">{u.heroBold}</h1>
@@ -159,18 +160,16 @@ export default async function Home({ params }: { params: Promise<{ lang: string 
 
       {/* 7 · Split call to action */}
       <section className="split" aria-label={d.nav.request}>
-        <div className="split-dark">
-          <div>
-            <h2>{d.home.providerTitle}</h2>
-            <p>{d.home.providerText}</p>
-          </div>
+        <div className="split-half split-dark">
+          <span className="split-role"><Mark size={30} /> {d.ui.owners}</span>
+          <h2>{d.home.providerTitle}</h2>
+          <p>{d.home.providerText}</p>
           <Link className="btn btn-primary" href={L('/providers')}>{d.home.providerCta}</Link>
         </div>
-        <div className="split-sun">
-          <div>
-            <h2>{u.needTitle}</h2>
-            <p>{u.needText}</p>
-          </div>
+        <div className="split-half split-sun">
+          <span className="split-role"><IconRenter size={24} /> {d.ui.renters}</span>
+          <h2>{u.needTitle}</h2>
+          <p>{u.needText}</p>
           <Link className="btn btn-dark" href={L('/request')}>{d.nav.request}</Link>
         </div>
       </section>

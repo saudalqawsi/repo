@@ -37,3 +37,14 @@ export function IconLock() {
   )
 }
 export const FEATURE_ICONS = [IconHelmet, IconShield, IconTag, IconLock]
+
+/** Renter (customer) mark: a hard hat. Owners use the loader mark in yellow. */
+export function IconRenter({ size = 18 }: { size?: number }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M4 15a8 8 0 0 1 16 0" />
+      <path d="M2.5 15h19v2.5h-19z" />
+      <path d="M10 7.5V6h4v1.5M12 6v5" />
+    </svg>
+  )
+}

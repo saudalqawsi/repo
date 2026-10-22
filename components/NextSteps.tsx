@@ -1,5 +1,4 @@
 import type { Dict, Locale } from '@/lib/i18n'
-import { ContactNote } from './Contact'
 
 /** The two steps that follow an owner's acceptance. Both providers are still being chosen. */
 export function NextSteps({ d, locale, state = 'pending' }: { d: Dict['after']; locale?: Locale; state?: 'pending' | 'waiting' }) {
@@ -22,7 +21,6 @@ export function NextSteps({ d, locale, state = 'pending' }: { d: Dict['after']; 
           <span className="soon">{state === 'waiting' ? d.waiting : d.soon}</span>
         </li>
       </ol>
-      {locale ? <ContactNote locale={locale} lead={d.help} /> : null}
     </section>
   )
 }
