@@ -281,7 +281,7 @@ export function JobPrompt({
     let s1 = parts.join(locale === 'ar' ? '، ' : ', ')
     const when: string[] = []
     if (ed.start) when.push(locale === 'ar' ? `يبدأ ${fmtDate(ed.start)}` : `starting ${fmtDate(ed.start)}`)
-    if (durationText) when.push(locale === 'ar' ? `لمدة ${durationText}` : `for ${durationText}`)
+    if (durationText) when.push(locale === 'ar' ? `لمدة ${durationText.replace(/^(يوم|أسبوع|شهر)ان$/, '$1ين')}` : `for ${durationText}`)
     const shift = optLabel('shift', ed.details.shift)
     if (shift) when.push(locale === 'ar' ? `وردية ${shift}` : `${shift.toLowerCase()} shift`)
     if (when.length) s1 += (locale === 'ar' ? '، ' : ', ') + when.join(locale === 'ar' ? '، ' : ', ')
