@@ -143,7 +143,6 @@ export default async function AboutPage({ params }: { params: Promise<{ lang: st
               </li>
             ))}
           </ul>
-          <p className="ab-note">{d.marketNote}</p>
         </div>
       </section>
 
