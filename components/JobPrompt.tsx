@@ -11,7 +11,7 @@ import type { Pin } from './SiteMap'
 const SiteMap = dynamic(() => import('./SiteMap').then((m) => m.SiteMap), { ssr: false })
 
 type Suggestion = { slug: string; qty: number; why?: string }
-type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; note?: string | null; attrs?: Partial<Attrs> }
+type Result = { items: Suggestion[]; basis: Basis; duration_value: number | null; note?: string | null; clean_text?: string | null; attrs?: Partial<Attrs> }
 type DetailKey = keyof typeof DETAIL_ENUMS
 /** What the customer sees and can edit after the assistant answers. */
 type Edit = {
@@ -156,8 +156,14 @@ export function JobPrompt({
       if (res.status === 429) setError(d.limit)
       else if (!res.ok || !json.items?.length) setError(d.noMatch)
       else {
-        setResult(json as Result)
-        setEdit(toEdit(json as Result))
+        const r = json as Result
+        setResult(r)
+        setEdit(toEdit(r))
+        // show the tidied transcript so the customer reads what we understood
+        if (r.clean_text && r.clean_text.trim() && r.clean_text.trim() !== value) {
+          textRef.current = r.clean_text.trim()
+          setText(r.clean_text.trim())
+        }
       }
     } catch {
       setError(d.noMatch)
@@ -468,7 +474,6 @@ export function JobPrompt({
               <button className="btn btn-ghost" type="button" aria-expanded={showContract} onClick={() => setShowContract((x) => !x)}>
                 {showContract ? d.hideContract : d.showContract}
               </button>
-              <button className="btn-link" type="button" onClick={() => { setResult(null); setEdit(null); areaRef.current?.focus() }}>{d.tryAgain}</button>
             </div>
             {showContract ? (
               <SampleContract

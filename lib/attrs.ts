@@ -24,6 +24,60 @@ export function riyadhToday() {
 }
 const addDays = (iso: string, n: number) => new Date(Date.parse(iso) + n * 86400_000).toISOString().slice(0, 10)
 
+const DAYS: [RegExp, number][] = [
+  [/(الاحد|sunday)/, 0],
+  [/(الاثنين|الاتنين|monday)/, 1],
+  [/(الثلاثاء|الثلاثا|tuesday)/, 2],
+  [/(الاربعاء|الاربعا|wednesday)/, 3],
+  [/(الخميس|thursday)/, 4],
+  [/(الجمعه|friday)/, 5],
+  [/(السبت|saturday)/, 6],
+]
+export const weekdayOf = (iso: string) => new Date(iso + 'T12:00:00Z').getUTCDay()
+
+/**
+ * Reads a start date from everyday phrasing, in Riyadh time:
+ * today, tomorrow, the day after tomorrow, in N days, (next) Sunday…, next week, next month, or a date like 3/11.
+ */
+export function parseStart(n: string, today: string): string | null {
+  if (/(بعد بكره|بعد بكرا|بعد غد|day after tomorrow)/.test(n)) return addDays(today, 2)
+  if (/(بكره|بكرا|غدا|tomorrow)/.test(n)) return addDays(today, 1)
+  const inDays = n.match(/(?:بعد|in)\s*(\d+)\s*(?:يوم|ايام|days?)/)
+  if (inDays) return addDays(today, Math.min(120, +inDays[1]))
+  if (/(بعد يومين|in two days)/.test(n)) return addDays(today, 2)
+  for (const [re, day] of DAYS) {
+    if (!re.test(n)) continue
+    let diff = (day - weekdayOf(today) + 7) % 7
+    if (diff === 0) diff = 7 // "Sunday" said on a Sunday means the coming one
+    // "الأحد بعد الجاي" / "Sunday after next": one more week
+    if (/(بعد الجاي|بعد القادم|after next)/.test(n)) diff += 7
+    return addDays(today, diff)
+  }
+  if (/(الاسبوع القادم|الاسبوع الجاي|next week)/.test(n)) {
+    // the coming Sunday, when the Saudi working week starts
+    const diff = (7 - weekdayOf(today)) % 7 || 7
+    return addDays(today, diff)
+  }
+  if (/(الشهر القادم|الشهر الجاي|next month)/.test(n)) {
+    const d = new Date(today + 'T12:00:00Z')
+    return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth() + 1, 1)).toISOString().slice(0, 10)
+  }
+  const dm = n.match(/(?<![\d/])(\d{1,2})\s*\/\s*(\d{1,2})(?![\d/])/)
+  if (dm) {
+    const d = new Date(today + 'T12:00:00Z')
+    const day = +dm[1]
+    const month = +dm[2] - 1
+    if (day >= 1 && day <= 31 && month >= 0 && month <= 11) {
+      let y = d.getUTCFullYear()
+      let iso = new Date(Date.UTC(y, month, day)).toISOString().slice(0, 10)
+      if (iso < today) iso = new Date(Date.UTC(++y, month, day)).toISOString().slice(0, 10)
+      return iso
+    }
+  }
+  if (/(اليوم|today)/.test(n)) return today
+  return null
+}
+
 /** Keyword fallback for when no AI key is configured. */
 export function extractAttrs(text: string): Attrs {
   const n = normalize(text)
@@ -31,11 +85,7 @@ export function extractAttrs(text: string): Attrs {
     text.match(/(حي\s+[^\s،,.؛]+)/)?.[1] ??
     text.match(/\b(?:in|at)\s+((?:Al[\s-])?[A-Z][\w-]+(?:\s[A-Z][\w-]+)?)/)?.[1] ??
     null
-  const today = riyadhToday()
-  let start: string | null = null
-  if (/(بكره|بكرا|غدا|tomorrow)/.test(n)) start = addDays(today, 1)
-  else if (/(الاسبوع القادم|الاسبوع الجاي|next week)/.test(n)) start = addDays(today, 7)
-  else if (/(اليوم|today)/.test(n)) start = today
+  const start = parseStart(n, riyadhToday())
   const ground = /(صخر|rock)/.test(n) ? 'rock' : /(رمل|sand)/.test(n) ? 'sand' : /(طين|clay|mud)/.test(n) ? 'clay' : /(اسفلت|معبد|paved|asphalt)/.test(n) ? 'paved' : null
   const shift = /(ليل|night)/.test(n) ? 'night' : null
   return { summary: text.trim().slice(0, 200), site, start_date: start, ground, access: null, shift, permits: null }
